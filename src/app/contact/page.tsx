@@ -8,17 +8,16 @@ import {
   RiTelegramFill,
   RiChatSmile2Line,
 } from "react-icons/ri";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
-const desc = "لو عندك أي استفسار أو سؤال في بالك، فريق لوكوجي جاهز للرد عليك. تواصل معنا لمناقشة آخر تطورات السوق المصري والعالمي.";
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
 const title = "تواصل معنا | فريق لوكوجي الاقتصادي";
+const description = "لو عندك أي استفسار أو سؤال في بالك، فريق لوكوجي جاهز للرد عليك. تواصل معنا لمناقشة آخر تطورات السوق المصري والعالمي.";
 
-export const metadata: Metadata = {
-  title: "اتصل بنا",
-  description: desc,
-  openGraph: { title, description: desc },
-  alternates: { canonical: `${siteUrl}/contact` },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/contact",
+});
 
 const contactInfo = [
   {

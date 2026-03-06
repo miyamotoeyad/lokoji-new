@@ -10,14 +10,16 @@ import {
   RiGovernmentLine,
 } from "react-icons/ri";
 import { getCommodities, type CommodityItem } from "@/lib/Data/commoditiesData";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
+const title = "أسعار السلع";
+const description = "تابع أسعار الذهب والفضة والنفط والوقود مقابل الجنيه المصري.";
 
-export const metadata: Metadata = {
-  title: "أسعار السلع",
-  description: "تابع أسعار الذهب والفضة والنفط والوقود مقابل الجنيه المصري.",
-  alternates: { canonical: `${siteUrl}/commodities` },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/commodities",
+});
 
 const categoryConfig = {
   gold: {

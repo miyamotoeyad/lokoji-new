@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Articles/Header";
 import Content from "@/components/Articles/Content";
@@ -10,20 +9,12 @@ import GoogleNews from "@/components/Articles/GoogleNews";
 import { client } from "@/utils/contentful";
 import { TypeArticlesSkeleton, TypeAuthorsSkeleton } from "@/types";
 import getArticles, { getArticle } from "@/utils/Content/getArticles";
-import { Asset, AssetFile, Entry } from "contentful";
+import { Entry } from "contentful";
 import { AuthorDetailsCard } from "@/components/Articles/AuthorDetailsCard";
+import { generateArticleMetadata } from "@/lib/MetaData/generateArticleMetadata";
+import { getJsonLdArticle, getJsonLdImage } from "@/lib/Schemas/getJsonLd";
 
 type Params = Promise<{ slug: string }>;
-
-// ── Helper: safely extract image URL from a Contentful Asset field ──
-function getImageUrl(image: unknown): string {
-  if (image && typeof image === "object" && "fields" in image) {
-    const asset = image as Asset<undefined, string>;
-    const file = asset.fields.file as AssetFile | undefined;
-    return file?.url ? `https:${file.url}` : "/no-image.png";
-  }
-  return "/no-image.png";
-}
 
 // ── Static paths ──
 export const generateStaticParams = async () => {
@@ -34,38 +25,8 @@ export const generateStaticParams = async () => {
 };
 
 // ── Metadata ──
-export async function generateMetadata({
-  params,
-}: {
-  params: Params;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const data = await getArticle(slug);
-  const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "https://lokoji.com";
-
-  if (!data) return notFound();
-
-  const imageUrl = getImageUrl(data.fields.image);
-
-  return {
-    title: data.fields.title as string,
-    description: (data.fields.subtitle as string) ?? "",
-    alternates: { canonical: `${siteUrl}/post/${data.fields.slug}` },
-    keywords: data.fields.tag as string[],
-    openGraph: {
-      title: data.fields.title as string,
-      description: (data.fields.subtitle as string) ?? "",
-      type: "article",
-      url: `${siteUrl}/post/${data.fields.slug}`,
-      publishedTime: data.sys.createdAt,
-      images: [{ url: imageUrl, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: data.fields.title as string,
-      images: [imageUrl],
-    },
-  };
+export async function generateMetadata({ params }: { params: Params }) {
+  return generateArticleMetadata({ params });
 }
 
 // ── Page ──
@@ -75,21 +36,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
     getArticle(slug),
     getArticles(),
   ]);
-  const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "https://lokoji.com";
 
   if (!data) return notFound();
-
-  const imageUrl = getImageUrl(data.fields.image);
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: data.fields.title,
-    image: [imageUrl],
-    datePublished: data.sys.createdAt,
-    dateModified: data.sys.updatedAt,
-    author: [{ "@type": "Organization", name: "لوكوجي", url: siteUrl }],
-  };
 
   const isAuthorResolved = data.fields.author && "fields" in data.fields.author;
 
@@ -179,7 +127,15 @@ export default async function ArticlePage({ params }: { params: Params }) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getJsonLdArticle(data)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getJsonLdImage(data)),
+        }}
       />
     </main>
   );

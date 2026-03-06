@@ -1,3 +1,4 @@
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { CookieIcon } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -9,16 +10,15 @@ import {
   RiParentLine,
 } from "react-icons/ri";
 
-const desc = "اقرأ عن سياسة الخصوصية الخاصة بموقع لوكوجي لتطمئن على كيفية حماية بياناتك الشخصية.";
+const description = "اقرأ عن سياسة الخصوصية الخاصة بموقع لوكوجي لتطمئن على كيفية حماية بياناتك الشخصية.";
 const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
 const title = "سياسة الخصوصية";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateStaticMetadata({
   title,
-  description: desc,
-  openGraph: { title, description: desc },
-  alternates: { canonical: `${siteUrl}/privacy-policy` },
-};
+  description,
+  url: "/privacy-policy",
+});
 
 const sections = [
   {

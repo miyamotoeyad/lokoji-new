@@ -11,15 +11,16 @@ import {
   RiArrowLeftSLine,
 } from "react-icons/ri";
 import { getETFs, type ETFItem } from "@/lib/Data/etfData";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
+const title = "صناديق الاستثمار";
+const description = "تابع أداء صناديق الاستثمار المرتبطة بالسوق المصري والمؤشرات الرئيسية في البورصة المصرية.";
 
-export const metadata: Metadata = {
-  title: "صناديق الاستثمار",
-  description:
-    "تابع أداء صناديق الاستثمار المرتبطة بالسوق المصري والمؤشرات الرئيسية في البورصة المصرية.",
-  alternates: { canonical: `${siteUrl}/etfs` },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/etfs",
+});
 
 const marketBadge: Record<
   ETFItem["market"],

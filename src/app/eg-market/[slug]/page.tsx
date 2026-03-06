@@ -11,8 +11,9 @@ import { getEgyptianMarketData, type EGStock } from "@/lib/Data/egMarketData";
 import { getIntradayCandles, type CandlePoint } from "@/lib/Data/chartData";
 import { notFound } from "next/navigation";
 import MarketChart from "@/components/Charts/MarketChart";
-import { Metadata } from "next";
+
 import Link from "next/link";
+import { generateStockMetadata, StockParams } from "@/lib/MetaData/generateStockMetadata";
 
 export const dynamicParams = true;
 
@@ -29,19 +30,8 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  try {
-    const stocks = await getEgyptianMarketData();
-    const stock = stocks.find((s) => s.slug === slug);
-    if (!stock) return { title: "شركة غير معروفة" };
-    return {
-      title: `${stock.titleAr}`,
-      description: `تابع أداء سهم ${stock.titleEn} في البورصة المصرية — السعر الحالي والتغيير اليومي.`,
-    };
-  } catch {
-    return { title: "البورصة المصرية" };
-  }
+export async function generateMetadata({ params }: { params: StockParams }) {
+  return generateStockMetadata({ params });
 }
 
 function StatRow({ label, value }: { label: string; value: string }) {

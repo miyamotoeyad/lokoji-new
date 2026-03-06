@@ -1,3 +1,4 @@
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { Metadata } from "next";
 import {
   RiTeamLine,
@@ -6,17 +7,15 @@ import {
   RiLightbulbLine,
 } from "react-icons/ri";
 
-const desc =
+const description =
   "أهلاً بكم في لوكوجي، أول منصة اقتصادية قومية متخصصة في تحليل الأسواق المصرية والعالمية برؤية مصرية خالصة.";
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
-const title = "من نحن";
+const title = "أحنا مين؟";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateStaticMetadata({
   title,
-  description: desc,
-  openGraph: { title, description: desc, images: [`${siteUrl}/og-about.jpg`] },
-  alternates: { canonical: `${siteUrl}/about` },
-};
+  description,
+  url: "/about",
+});
 
 const features = [
   "تغطية حصرية لبورصات العالم والجمهورية المصرية.",
@@ -44,7 +43,7 @@ export default function About() {
         </h1>
 
         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-          {desc}
+          {description}
         </p>
       </header>
 

@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import Link from "next/link";
 import {
   RiSearchLine,
@@ -20,16 +19,15 @@ import ArtSquCard from "@/components/Articles/ArtSquCard";
 import SearchNotFound from "@/components/Cards/SearchNotFound";
 import { Entry } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
+import { generateSearchMetadata, SearchParams } from "@/lib/MetaData/generateSearchMetadata";
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>;
-}): Promise<Metadata> {
-  const { search } = await searchParams;
-  return { title: `نتائج البحث: ${search || ""} :: لوكوجي` };
+  searchParams: SearchParams;
+}) {
+  return generateSearchMetadata({ searchParams });
 }
-
 // ── Section config ──────────────────────────────────────────────────────────
 const SECTIONS = [
   { id: "articles", title: "المقالات والتقارير", icon: RiArticleLine },

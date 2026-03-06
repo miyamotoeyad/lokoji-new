@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AuthorCard } from "@/components/Cards";
 import { AuthorDetailsCard } from "@/components/Articles/AuthorDetailsCard";
@@ -6,17 +5,12 @@ import { getAuthorBySlug } from "@/utils/Content/getAuthor";
 import getArticles from "@/utils/Content/getArticles";
 import { Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
+import { AuthorParams, generateAuthorMetadata } from "@/lib/MetaData/generateAuthorMetadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug }    = await params;
-  const authorEntry = await getAuthorBySlug(slug);
-  if (!authorEntry) return { title: "الكاتب غير موجود" };
-  return {
-    title: `${authorEntry.fields.name as string} :: لوكوجي`,
-    description: authorEntry.fields.description as string,
-  };
+export async function generateMetadata({ params }: { params: AuthorParams }) {
+  return generateAuthorMetadata({ params });
 }
 
 export default async function AuthorDetailsPage({ params }: Props) {

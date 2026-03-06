@@ -8,6 +8,7 @@ import {
 } from "react-icons/ri";
 import { CryptoCard } from "@/components/Cards";
 import { Metadata } from "next";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
 export interface MarketData {
   id: number;
@@ -32,10 +33,14 @@ interface CMCResponse {
   };
 }
 
-export const metadata: Metadata = {
-  title: "سوق العملات الرقمية",
-  description: "تابع أسعار العملات الرقمية مباشرة، تحليل السوق وحركة الأسعار لحظة بلحظة.",
-};
+const title = "سوق العملات الرقمية";
+const description = "تابع أسعار العملات الرقمية مباشرة، تحليل السوق وحركة الأسعار لحظة بلحظة.";
+
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/crypto",
+});
 
 async function getCryptoData(): Promise<CMCResponse> {
   const res = await fetch(

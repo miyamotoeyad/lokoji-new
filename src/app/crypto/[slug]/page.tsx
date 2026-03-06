@@ -8,8 +8,9 @@ import {
   RiArrowLeftSLine,
 } from "react-icons/ri";
 import CryptoChart from "@/components/Charts/CryptoChart";
-import { Metadata } from "next";
+
 import Link from "next/link";
+import { CryptoParams, generateCryptoMetadata } from "@/lib/MetaData/generateCryptoMetadata";
 
 interface CryptoDetail {
   id: number;
@@ -41,14 +42,8 @@ interface CMCResponse {
 
 type PageProps = { params: Promise<{ slug: string }> };
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  return {
-    title: `سعر عملة ${slug.toUpperCase()} المباشر | لوكوجي`,
-    description: `تحليل مباشر لعملة ${slug} مع الرسوم البيانية والمعلومات المالية الدقيقة.`,
-  };
+export async function generateMetadata({ params }: { params: CryptoParams }) {
+  return generateCryptoMetadata({ params });
 }
 
 async function getCryptoDetail(

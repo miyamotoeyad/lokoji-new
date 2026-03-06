@@ -1,3 +1,4 @@
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -10,13 +11,11 @@ import {
   RiBankCardLine,
 } from "react-icons/ri";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
-
-export const metadata: Metadata = {
+export const metadata: Metadata = generateStaticMetadata({
   title: "ادعم لوكوجي",
   description: "ساعدنا في استمرار تقديم تحليلات اقتصادية دقيقة ومبسطة للجميع.",
-  alternates: { canonical: `${siteUrl}/support` },
-};
+  url: "/support",
+});
 
 const tiers = [
   {

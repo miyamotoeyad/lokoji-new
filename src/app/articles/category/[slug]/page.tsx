@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Entry } from "contentful";
 import { RiPriceTag3Line } from "react-icons/ri";
@@ -8,10 +7,9 @@ import { CatMenu } from "@/lib/Menus/categoryMenu";
 import { ArticleSkeleton } from "@/types/contentfulType";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
 import getArticles from "@/utils/Content/getArticles";
+import { CategoryParams, generateCategoryMetadata } from "@/lib/MetaData/generateCategoryMetadata";
 
 type Params = Promise<{ slug: string }>;
-
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "https://lokoji.com";
 
 // ── Static paths ──
 export async function generateStaticParams() {
@@ -19,26 +17,8 @@ export async function generateStaticParams() {
 }
 
 // ── Metadata ──
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { slug } = await params;
-  const navTitle = CatMenu.find((item) => item.link.toString() === slug);
-
-  if (!navTitle) return {};
-
-  const title = `${navTitle.title} :: لوكوجي`;
-  const desc  = `دي صفحة تابعة لقسم ${navTitle.title}`;
-
-  return {
-    title,
-    description: desc,
-    openGraph: {
-      title,
-      description: desc,
-      type: "website",
-      url: `${siteUrl}/articles/category/${slug}`,
-    },
-    alternates: { canonical: `${siteUrl}/articles/category/${slug}` },
-  };
+export async function generateMetadata({ params }: { params: CategoryParams }) {
+  return generateCategoryMetadata({ params });
 }
 
 // ── Page ──

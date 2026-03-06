@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -20,11 +19,6 @@ import { client } from "@/utils/contentful";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
 import { Entry, Asset, AssetFile } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
-
-export const metadata: Metadata = {
-  title: "لوكوجي :: نبض السوق",
-  description: "المنصة الرائدة لمتابعة الاقتصاد والأسواق",
-};
 
 async function getHomeData() {
   // ✅ Single Promise.all — no nesting

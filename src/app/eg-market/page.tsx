@@ -9,19 +9,17 @@ import {
 import Link from "next/link";
 import { getEgyptianMarketData, type EGStock } from "@/lib/Data/egMarketData";
 import EGMarketTable from "@/components/Market/EGMarketTable";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
+import { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
+const title = "البورصة المصرية | متابعة حية للأسهم";
+const description = "تابع أسعار الأسهم والشركات المدرجة في البورصة المصرية لحظة بلحظة.";
 
-export const metadata = {
-  title: "البورصة المصرية | متابعة حية للأسهم",
-  description:
-    "تابع أسعار الأسهم والشركات المدرجة في البورصة المصرية لحظة بلحظة.",
-  alternates: { canonical: `${siteUrl}/eg-market` },
-  openGraph: {
-    title: "السوق المصري - لوكوجي",
-    description: "أسعار الأسهم المصرية والتحليلات المالية",
-  },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/eg-market",
+});
 
 export default async function MarketPage() {
   const stocks = await getEgyptianMarketData();

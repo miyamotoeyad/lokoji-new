@@ -1,3 +1,4 @@
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,10 +9,14 @@ import {
   RiNewspaperLine,
 } from "react-icons/ri";
 
-export const metadata: Metadata = {
-  title: "إنفوجرافيك لوكوجي",
-  description: "تبسيط البيانات الاقتصادية المعقدة من خلال رسوم بيانية وتوضيحية سهلة الفهم.",
-};
+const title = "إنفوجرافيك لوكوجي";
+const description = "تبسيط البيانات الاقتصادية المعقدة من خلال رسوم بيانية وتوضيحية سهلة الفهم.";
+
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/infographics",
+});
 
 const INFOGRAPHICS = [
   {

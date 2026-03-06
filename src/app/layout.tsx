@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Provider from "./Provider";
 import ScrollButton from "@/components/Client/ScrollBtn";
 import CookieBanner from "@/components/Client/CookieBanner";
+import { generateBreadcrumbSchema, organizationSchema, websiteSchema } from "@/lib/Schemas/schemas";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
@@ -48,6 +49,14 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: [
+      { url: "/icon0.svg", type: "image/svg+xml" }, // "any" for .ico format
+      { url: "/icon1.png", type: "image/png", sizes: "96x96" }, // "any" for .ico format
+    ],
+    apple: "/apple-icon.png",
+  },
+  manifest: "/site.webmanifest",
   twitter: {
     site: "@LokojiEco",
     card: "summary_large_image",
@@ -66,6 +75,25 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Lokoji" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateBreadcrumbSchema()),
+          }}
+        />
+      </head>
       <body
         className={`
           ${ibmPlexArabic.variable} ${ibmPlexArabic.className}

@@ -1,3 +1,4 @@
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -9,15 +10,13 @@ import {
   RiExternalLinkLine,
 } from "react-icons/ri";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
 const title = "شروط الاستخدام";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generateStaticMetadata({
   title,
-  description:
-    "شروط وأحكام استخدام منصة لوكوجي الاقتصادية. تعرف على حقوقك والتزاماتك عند تصفح محتوانا.",
-  alternates: { canonical: `${siteUrl}/terms` },
-};
+  description: "شروط وأحكام استخدام منصة لوكوجي الاقتصادية. تعرف على حقوقك والتزاماتك عند تصفح محتوانا.",
+  url: "/terms",
+});
 
 export default function Terms() {
   return (

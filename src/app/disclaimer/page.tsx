@@ -7,27 +7,17 @@ import {
 } from "react-icons/ri";
 import { Metadata } from "next";
 import Link from "next/link";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
+const title = "إخلاء المسؤولية";
+const description =
+  "تعرف على حدود المسؤولية القانونية وشروط استخدام البيانات المعروضة في منصة لوكوجي.";
 
-export const metadata: Metadata = {
-  title: "إخلاء المسؤولية",
-  description:
-    "تعرف على حدود المسؤولية القانونية وشروط استخدام البيانات المعروضة في منصة لوكوجي.",
-  openGraph: {
-    title: "إخلاء المسؤولية",
-    description: "توضيح قانوني حول دقة البيانات ومصادر الأسعار في منصة لوكوجي.",
-    url: `${siteUrl}/disclaimer`,
-    siteName: "لوكوجي",
-    locale: "ar_EG",
-    type: "website",
-  },
-  twitter: {
-    card: "summary",
-    title: "إخلاء المسؤولية",
-    description: "حدود المسؤولية القانونية لمنصة لوكوجي.",
-  },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/disclaimer",
+});
 
 const sections = [
   {

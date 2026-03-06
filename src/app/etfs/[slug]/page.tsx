@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   RiArrowUpSFill,
@@ -13,6 +12,7 @@ import Link from "next/link";
 import { getETFs, type ETFItem } from "@/lib/Data/etfData";
 import ETFChart from "@/components/Charts/ETFChart";
 import { getIntradayCandles } from "@/lib/Data/chartData"
+import { ETFParams, generateETFMetadata } from "@/lib/MetaData/generateETFMetadata";
 
 export const dynamicParams = true;
 
@@ -27,19 +27,8 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  try {
-    const etfs = await getETFs();
-    const item = etfs.find((e) => e.slug === slug);
-    if (!item) return { title: "صندوق غير موجود" };
-    return {
-      title: `${item.title}`,
-      description: `تابع أداء ${item.titleEn} — السعر الحالي والتغيير اليومي.`,
-    };
-  } catch {
-    return { title: "صناديق الاستثمار" };
-  }
+export async function generateMetadata({ params }: { params: ETFParams }) {
+  return generateETFMetadata({ params });
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {

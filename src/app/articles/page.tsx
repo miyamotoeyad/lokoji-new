@@ -6,18 +6,17 @@ import ArtSquCard from "@/components/Articles/ArtSquCard";
 import getArticles from "@/utils/Content/getArticles";
 import { Entry } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
+import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
-const desc =
+const description =
   "كل المقالات والآراء الاقتصادية هتلاقيها عندنا وبشكل مبسط وأخبار أول بأول - لوكوجي نبض الاقتصاد.";
-const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;
 const title = "الأرشيف الاقتصادي | مقالات لوكوجي";
 
-export const metadata: Metadata = {
-  title: "المقالات",
-  description: desc,
-  openGraph: { title, description: desc },
-  alternates: { canonical: `${siteUrl}/articles` },
-};
+export const metadata: Metadata = generateStaticMetadata({
+  title,
+  description,
+  url: "/articles",
+});
 
 export default async function Page() {
   const data = await getArticles();
