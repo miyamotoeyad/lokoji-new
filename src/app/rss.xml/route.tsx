@@ -41,7 +41,7 @@ function addItem(feed: RSS, post: ContentfulPost) {
     author: post.fields.author?.fields?.name ?? "لوكوجي",
     enclosure: {
       url: imageUrl,
-      length: 1000,
+      size: 1000,
       type: "image/jpeg",
     },
   });
