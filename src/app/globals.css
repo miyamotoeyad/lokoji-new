@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Brand Colors */
+  --color-primary-brand: #0568A6;
+  --color-dprimary: #16213e;
+  --color-dlight: #0f3460;
+  --color-destructive: #ef4444;
+
+  /* Standard Tailwind 4 Mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+
+  /* Fix: Explicitly define muted-foreground so Tailwind recognizes it */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  /* Radius Scale */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --border: oklch(0.922 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --border: oklch(1 0 0 / 10%);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    @apply font-bold text-foreground;
+  }
+  h1 {
+    @apply text-4xl my-6;
+  }
+  h2 {
+    @apply text-3xl my-6;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  .text-destructive {
+    @apply text-red-500;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    direction: rtl;
+    font-family: "medium", sans-serif;
+  }
+
+  q {
+    @apply font-bold text-2xl italic text-primary-brand block py-4;
+  }
+
+  .dark q {
+    color: var(--muted-foreground);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-3 px-6 py-3 cursor-pointer font-bold rounded-3xl border-2 border-border transition-all duration-300
+    hover:bg-primary-brand hover:border-primary-brand hover:text-white;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
