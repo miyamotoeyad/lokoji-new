@@ -6,7 +6,11 @@ import Footer from "@/components/Footer";
 import Provider from "./Provider";
 import ScrollButton from "@/components/Client/ScrollBtn";
 import CookieBanner from "@/components/Client/CookieBanner";
-import { generateBreadcrumbSchema, organizationSchema, websiteSchema } from "@/lib/Schemas/schemas";
+import {
+  generateBreadcrumbSchema,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/Schemas/schemas";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
@@ -62,7 +66,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   verification: {
-    google: "SAdpay-liv1rI5Wv_WMEhQWbAXRtsm96riCif7zyOzs",
+    google: "phsyYqmauz0IEuSeMX3muiHhjWBOp6bBZDGmi8QNHXw",
   },
   robots: {
     index: true,
