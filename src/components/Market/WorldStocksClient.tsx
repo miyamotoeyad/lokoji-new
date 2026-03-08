@@ -63,20 +63,25 @@ export default function WorldStocksClient({ stocks, sectors }: Props) {
       </div>
 
       {/* ── SECTOR PILLS ── */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-        {sectors.map((sector) => (
-          <button
-            key={sector}
-            onClick={() => setActiveSector(sector)}
-            className={`shrink-0 cursor-pointer text-xs font-black px-3 py-1.5 rounded-xl border transition-all duration-200 ${
-              activesector === sector
-                ? "bg-primary-brand text-white border-primary-brand shadow-sm"
-                : "bg-muted border-border text-muted-foreground hover:border-primary-brand/40 hover:text-foreground"
-            }`}
-          >
-            {sector}
-          </button>
-        ))}
+      <div className="relative">
+        {/* Right fade */}
+        <div className="absolute left-0 top-0 bottom-1 w-8 bg-linear-to-r from-background to-transparent z-10 pointer-events-none" />
+
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          {sectors.map((sector) => (
+            <button
+              key={sector}
+              onClick={() => setActiveSector(sector)}
+              className={`shrink-0 cursor-pointer text-xs font-black px-3 py-1.5 rounded-xl border transition-all duration-200 ${
+                activesector === sector
+                  ? "bg-primary-brand text-white border-primary-brand shadow-sm"
+                  : "bg-muted border-border text-muted-foreground hover:border-primary-brand/40 hover:text-foreground"
+              }`}
+            >
+              {sector}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── RESULTS COUNT ── */}
