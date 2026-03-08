@@ -1,20 +1,25 @@
 "use client";
 
+import { ArticleSkeleton } from "@/types/contentfulType";
+import { Asset, AssetFile, Entry } from "contentful";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { RiCalendar2Line, RiArrowLeftLine } from "react-icons/ri";
 
 interface ArtRegCardProps {
-  article: any; // Ideally use your Entry<TypeArticlesSkeleton> type here
+  article: Entry<ArticleSkeleton, undefined, string>;
 }
 
 export default function ArtRegCard({ article }: ArtRegCardProps) {
   // Safety check to prevent crash if data is still loading or missing
   if (!article || !article.fields) return null;
 
-  const { title, slug, image, category, summary } = article.fields;
-  const imageUrl = image?.fields?.file?.url ? `https:${image.fields.file.url}` : "/no-image.png";
+  const { title, slug, image, category, subtitle } = article.fields;
+
+  const asset = image as Asset;
+  const file = asset?.fields?.file as AssetFile | undefined;
+  const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
 
   return (
     <Link 
@@ -53,7 +58,7 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
 
           {/* Optional: Summary (if you have this field in Contentful) */}
           <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed line-clamp-3 mb-8">
-            {summary || "تابع آخر التطورات والتحليلات الحصرية حول هذا الموضوع عبر لوكوجي، حيث نقدم لك الرؤية الكاملة للسوق المصري والعالمي."}
+            {subtitle || "تابع آخر التطورات والتحليلات الحصرية حول هذا الموضوع عبر لوكوجي، حيث نقدم لك الرؤية الكاملة للسوق المصري والعالمي."}
           </p>
         </div>
 
@@ -62,7 +67,7 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
           <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-bold">
             <RiCalendar2Line size={20} className="text-primary" />
             <span>
-              {new Date(article.sys.createdAt).toLocaleDateString("ar-EG", {
+              {new Date(article.fields.publicationDate).toLocaleDateString("ar-EG", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",

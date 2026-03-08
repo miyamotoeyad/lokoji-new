@@ -14,11 +14,11 @@ interface ArtAlsoReadProps {
 export default function ArtAlsoRead({ data }: ArtAlsoReadProps) {
   const { title, slug, image, category } = data.fields;
 
-  const asset   = image as Asset;
-  const file    = asset?.fields?.file as AssetFile | undefined;
+  const asset = image as Asset;
+  const file = asset?.fields?.file as AssetFile | undefined;
   const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
 
-  const date = new Date(data.sys.createdAt).toLocaleDateString("ar-EG", {
+  const date = new Date(data.fields.publicationDate).toLocaleDateString("ar-EG", {
     day: "numeric",
     month: "short",
   });

@@ -48,7 +48,7 @@ async function getHomeData() {
     worldIndices,
     worldStocks,
   ] = await Promise.all([
-    client.getEntries({ content_type: "articles", order: ["-sys.createdAt"] }),
+    client.getEntries({ content_type: "articles", order: ["-fields.publicationDate"] }),
     getExchangeRates("USD"),
     getETFs(),
     getCommodities(),
@@ -501,7 +501,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles.slice(2, 10).map((post) => (
+              {articles.slice(1, 10).map((post) => (
                 <ArtSquCard
                   key={post.sys.id}
                   article={post as Entry<ArticleSkeleton, undefined, string>}

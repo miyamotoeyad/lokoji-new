@@ -11,16 +11,19 @@ interface ArtSquCardProps {
   variant?: "hero" | "grid";
 }
 
-export default function ArtSquCard({ article, variant = "grid" }: ArtSquCardProps) {
+export default function ArtSquCard({
+  article,
+  variant = "grid",
+}: ArtSquCardProps) {
   if (!article || !article.fields) return null;
 
   const { title, slug, image, category } = article.fields;
 
-  const asset    = image as Asset;
-  const file     = asset?.fields?.file as AssetFile | undefined;
+  const asset = image as Asset;
+  const file = asset?.fields?.file as AssetFile | undefined;
   const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
 
-  const date = new Date(article.sys.createdAt).toLocaleDateString("ar-EG", {
+  const date = new Date(article.fields.publicationDate).toLocaleDateString("ar-EG", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -29,7 +32,11 @@ export default function ArtSquCard({ article, variant = "grid" }: ArtSquCardProp
   /* ── HERO VARIANT ── */
   if (variant === "hero") {
     return (
-      <Link href={`/post/${slug as string}`} className="group block relative h-full min-h-130" dir="rtl">
+      <Link
+        href={`/post/${slug as string}`}
+        className="group block relative h-full min-h-130"
+        dir="rtl"
+      >
         <Image
           alt={(title as string) || "Article Image"}
           src={imageUrl}
