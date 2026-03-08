@@ -48,7 +48,7 @@ async function getHomeData() {
     worldIndices,
     worldStocks,
   ] = await Promise.all([
-    client.getEntries({ content_type: "articles", order: ["-fields.publicationDate"] }),
+    client.getEntries({ content_type: "articles", order: ["-sys.createdAt"] }),
     getExchangeRates("USD"),
     getETFs(),
     getCommodities(),
@@ -115,14 +115,13 @@ function ChangePill({
   );
 }
 
-// ── Region flag mapping ───────────────────────────────────────────────────────
 const REGION_FLAG: Record<string, string> = {
   أمريكا: "🇺🇸",
   أوروبا: "🇪🇺",
   آسيا: "🌏",
-  "الشرق الأوسط": "🌙",
-  أفريقيا: "🌍",
-  "أمريكا اللاتينية": "🌎",
+  "الشرق الأوسط": "MENA",
+  أفريقيا: "AF",
+  "أمريكا اللاتينية": "LA",
 };
 
 export default async function Home() {
@@ -136,7 +135,6 @@ export default async function Home() {
     worldStocks,
   } = await getHomeData();
 
-  // Group stocks by sector for the sector grid
   const stocksBySector = SECTORS.map((sector) => ({
     sector,
     stocks: worldStocks.filter((s) => s.sector === sector).slice(0, 3),
@@ -382,9 +380,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ══ 5. WORLD STOCKS BY SECTOR ══════════════════════════════════════
-             Layout: magazine-style sector grid — each sector is a card with
-             3 top stocks listed inside, sectors in a masonry-like 2-col grid  */}
         <section className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
@@ -501,7 +496,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles.slice(1, 10).map((post) => (
+              {articles.slice(2, 10).map((post) => (
                 <ArtSquCard
                   key={post.sys.id}
                   article={post as Entry<ArticleSkeleton, undefined, string>}
