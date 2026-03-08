@@ -19,12 +19,16 @@ export default function ExchangeClient() {
     useExchangeRates();
 
   const [amount1, setAmount1] = useState<number | string>(1);
-  const [amount2, setAmount2] = useState<number | string>("");
   const [currency1, setCurrency1] = useState("USD");
   const [currency2, setCurrency2] = useState("EGP");
   const [tableSearch, setTableSearch] = useState("");
 
-  // ✅ NO useEffect — rate is purely derived, recomputes when deps change
+  // ✅ Derived — no state, no effect, no cascading renders
+  const amount2 = useMemo(() => {
+    if (!rates[currency1] || !rates[currency2]) return "...";
+    return convert(parseFloat(String(amount1)) || 0, currency1, currency2);
+  }, [amount1, currency1, currency2, rates, convert]);
+
   const rate = useMemo(
     () =>
       rates[currency1] && rates[currency2]
@@ -51,31 +55,26 @@ export default function ExchangeClient() {
   );
 
   function handleAmount1Change(v: string) {
-    setAmount1(v);
-    setAmount2(convert(parseFloat(v) || 0, currency1, currency2));
-  }
-
-  function handleCurrency1Change(c: string) {
-    setCurrency1(c);
-    setAmount2(convert(parseFloat(String(amount1)) || 0, c, currency2));
+    setAmount1(v); // ✅ amount2 auto-derives
   }
 
   function handleAmount2Change(v: string) {
-    setAmount2(v);
+    // ✅ reverse convert into amount1
     setAmount1(convert(parseFloat(v) || 0, currency2, currency1));
   }
 
+  function handleCurrency1Change(c: string) {
+    setCurrency1(c); // ✅ amount2 auto-derives
+  }
+
   function handleCurrency2Change(c: string) {
-    setCurrency2(c);
-    setAmount1(convert(parseFloat(String(amount2)) || 0, c, currency1));
+    setCurrency2(c); // ✅ amount2 auto-derives
   }
 
   function swap() {
-    const c1 = currency1,
-      c2 = currency2;
-    setCurrency1(c2);
-    setCurrency2(c1);
-    setAmount2(convert(parseFloat(String(amount1)) || 0, c2, c1));
+    setCurrency1(currency2);
+    setCurrency2(currency1);
+    // ✅ amount2 auto-derives from new currencies
   }
 
   return (
@@ -238,7 +237,7 @@ export default function ExchangeClient() {
                       key={row.code}
                       onClick={() => {
                         setCurrency2(row.code);
-                        setAmount2(
+                        setAmount1(
                           convert(
                             parseFloat(String(amount1)) || 1,
                             currency1,

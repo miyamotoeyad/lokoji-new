@@ -10,12 +10,36 @@ export async function generateSearchMetadata({
   const { search } = await searchParams;
   const query = search?.trim() || "";
 
+  const title = query ? `نتائج البحث: "${query}"` : "نتائج البحث";
+  const description = query
+    ? `نتائج البحث عن "${query}" في لوكوجي — مقالات، أسهم، عملات، وسلع.`
+    : "نتائج البحث في لوكوجي — مقالات، أسهم، عملات، وسلع.";
+  const imageUrl = "/main.webp"
+  const imageAlt = "Lokoji - Market Pulse"
+  const imageWidth = 1200
+  const imageHeight = 630
+  const canonical = `/search-results?search=${encodeURIComponent(query)}`;
+
   return {
-    title: `نتائج البحث: "${query}"`,
-    description: `نتائج البحث عن "${query}" في لوكوجي — مقالات، أسهم، عملات، وسلع.`,
+    title,
+    description,
     robots: { index: false, follow: false }, // ✅ don't index search result pages
     alternates: {
-      canonical: `/search-results?search=${encodeURIComponent(query)}`,
+      canonical
     },
+    openGraph: {
+        title,
+        description,
+        url: canonical,
+        images: {
+          url: imageUrl,
+          width: imageWidth,
+          height: imageHeight,
+          alt: imageAlt,
+          type: "image/png",
+        },
+        siteName: "لوكوجي",
+        type: "website",
+      },
   };
 }

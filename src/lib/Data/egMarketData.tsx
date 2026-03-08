@@ -75,5 +75,5 @@ export async function getEgyptianMarketData(): Promise<EGStock[]> {
       } satisfies EGStock;
     }),
   );
-  return results.sort((a, b) => b.changePercent - a.changePercent);
+  return results.sort((a, b) => b.price - a.price);
 }

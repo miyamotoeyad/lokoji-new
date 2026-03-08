@@ -11,6 +11,7 @@ import {
 } from "react-icons/ri";
 import { getCommodities, type CommodityItem } from "@/lib/Data/commoditiesData";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
+import { petrolUpdate } from "@/lib/Array/EgyptPetrolList";
 
 const title = "أسعار السلع";
 const description = "تابع أسعار الذهب والفضة والنفط والوقود مقابل الجنيه المصري.";
@@ -64,7 +65,6 @@ function CommodityCard({ item }: { item: CommodityItem }) {
           <Icon size={20} />
         </div>
         {isFuel ? (
-          // Fuel prices are fixed by government — no % change
           <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-muted text-muted-foreground border border-border">
             <RiGovernmentLine size={11} />
             <span>سعر رسمي</span>
@@ -266,8 +266,7 @@ export default async function CommoditiesPage() {
         <div className="flex items-center gap-3 bg-orange-500/5 border border-orange-500/20 rounded-2xl px-5 py-3">
           <RiGovernmentLine size={16} className="text-orange-500 shrink-0" />
           <p className="text-xs font-bold text-orange-600 dark:text-orange-400">
-            أسعار الوقود محددة بقرار لجنة التسعير المصرية · آخر تحديث: أغسطس
-            2024
+            أسعار الوقود محددة بقرار لجنة التسعير المصرية · آخر تحديث: {petrolUpdate}
           </p>
         </div>
 

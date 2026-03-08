@@ -18,16 +18,28 @@ export async function generateAuthorMetadata({
   const name = authorEntry.fields.name as string;
   const description = authorEntry.fields.description as string;
 
+  const imageUrl = "/main.webp"
+  const imageAlt = "Lokoji - Market Pulse"
+  const imageWidth = 1200
+  const imageHeight = 630
+
   return {
-    title: `${name}`,
+    title: name,
     description,
     alternates: { canonical },
     openGraph: {
-      title: `${name}`,
+      title: name,
       description,
       url: canonical,
       siteName: "لوكوجي",
       type: "profile",
+      images: {
+        url: imageUrl,
+        width: imageWidth,
+        height: imageHeight,
+        alt: imageAlt,
+        type: "image/png",
+      },
     },
     twitter: {
       card: "summary",

@@ -13,11 +13,11 @@ export async function generateCryptoMetadata({
   const currency = slug.toUpperCase();
 
   return {
-    title: `سعر عملة ${currency} المباشر | لوكوجي`,
+    title: `سعر عملة ${currency} المباشر`,
     description: `تحليل مباشر لعملة ${currency} مع الرسوم البيانية والمعلومات المالية الدقيقة.`,
     alternates: { canonical },
     openGraph: {
-      title: `سعر عملة ${currency} المباشر | لوكوجي`,
+      title: `سعر عملة ${currency} المباشر`,
       description: `تحليل مباشر لعملة ${currency} مع الرسوم البيانية والمعلومات المالية الدقيقة.`,
       url: canonical,
       siteName: "لوكوجي",
@@ -25,7 +25,7 @@ export async function generateCryptoMetadata({
     },
     twitter: {
       card: "summary",
-      title: `سعر عملة ${currency} | لوكوجي`,
+      title: `سعر عملة ${currency}`,
       description: `تحليل مباشر لعملة ${currency} مع الرسوم البيانية والمعلومات المالية الدقيقة.`,
     },
   };

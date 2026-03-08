@@ -82,11 +82,11 @@ function ETFCard({ item }: { item: ETFItem }) {
 
       {/* Name */}
       <div>
-        <h3 className="font-black text-foreground text-sm leading-snug mb-1 group-hover:text-primary-brand transition-colors">
+        <h3 className="font-black text-foreground text-lg leading-snug mb-1 group-hover:text-primary-brand transition-colors">
           {item.title}
         </h3>
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest" dir="ltr">
-          {item.ticker}
+        <p className="text-[10px] text-right font-bold text-muted-foreground uppercase tracking-widest" dir="ltr">
+          {item.slug}
         </p>
       </div>
 
@@ -147,7 +147,7 @@ function ETFRow({ item, rank }: { item: ETFItem; rank: number }) {
             {item.title}
           </p>
           <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest" dir="ltr">
-            {item.ticker}
+            {item.slug}
           </p>
         </div>
       </div>
@@ -293,7 +293,7 @@ export default async function ETFPage() {
             <p className="text-sm font-black text-foreground mb-1">مصادر البيانات</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               البيانات من{" "}
-              <span className="font-bold text-foreground">Finnhub</span>{" "}
+              <span className="font-bold text-foreground">Yahoo Finance</span>{" "}
               · تُحدَّث كل 30 دقيقة · للأغراض الإعلامية فقط · ليست نصيحة استثمارية.
             </p>
           </div>

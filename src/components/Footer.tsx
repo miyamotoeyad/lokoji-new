@@ -213,13 +213,8 @@ export default function Footer() {
         </div>
 
         {/* ── BOTTOM BAR ── */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-xs">
-            كل الحقوق محفوظة لدى{" "}
-            <span className="text-foreground font-black">لوكوجي</span> &copy;{" "}
-            {new Date().getFullYear()}
-          </p>
-          <div className="flex gap-6">
+        <div className="pt-8 border-t border-border flex lg:flex-row justify-between flex-col items-center gap-4">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             {footerLinks.map((link) => (
               <Link
                 key={link.href}
@@ -230,6 +225,12 @@ export default function Footer() {
               </Link>
             ))}
           </div>
+
+          <p className="text-muted-foreground text-xs lg:mb-0 mb-16 text-center">
+            كل الحقوق محفوظة لدى{" "}
+            <span className="text-foreground font-black">لوكوجي</span> &copy;{" "}
+            {new Date().getFullYear()}
+          </p>
         </div>
       </div>
     </footer>

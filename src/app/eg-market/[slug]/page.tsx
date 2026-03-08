@@ -13,7 +13,10 @@ import { notFound } from "next/navigation";
 import MarketChart from "@/components/Charts/MarketChart";
 
 import Link from "next/link";
-import { generateStockMetadata, StockParams } from "@/lib/MetaData/generateStockMetadata";
+import {
+  generateStockMetadata,
+  StockParams,
+} from "@/lib/MetaData/generateStockMetadata";
 
 export const dynamicParams = true;
 
@@ -118,34 +121,44 @@ export default async function MarketDetailPage({ params }: Props) {
         </div>
 
         {/* Price hero */}
-        <div className="bg-muted border border-border rounded-2xl px-6 py-4 space-y-2 shrink-0">
+        <div className="bg-muted border border-border rounded-2xl px-5 py-4 space-y-1.5 shrink-0 w-full md:w-auto">
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
             السعر الحالي
           </p>
-          <p
-            className="text-3xl font-black text-foreground tabular-nums"
-            dir="ltr"
-          >
-            {stock.price.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-            <span className="text-sm font-bold text-muted-foreground mr-1.5">
-              EGP
-            </span>
-          </p>
-          <div
-            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-black ${
-              stock.positive
-                ? "bg-green-500/10 text-green-500"
-                : "bg-destructive/10 text-destructive"
-            }`}
-            dir="ltr"
-          >
-            {stock.positive ? (
-              <RiArrowUpSFill size={16} />
-            ) : (
-              <RiArrowDownSFill size={16} />
-            )}
-            {stock.positive ? "+" : "-"}
-            {stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
+
+          {/* Price + pill on same row */}
+          <div className="flex justify-between items-center gap-3 flex-wrap">
+            <p
+              className="text-2xl md:text-3xl font-black text-foreground tabular-nums"
+              dir="ltr"
+            >
+              {stock.price.toLocaleString("en-US", {
+                maximumFractionDigits: 2,
+              })}
+              <span className="text-sm font-bold text-muted-foreground mr-1.5">
+                EGP
+              </span>
+            </p>
+
+            <div
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-black shrink-0 ${
+                stock.positive
+                  ? "bg-green-500/10 text-green-500"
+                  : "bg-destructive/10 text-destructive"
+              }`}
+              dir="ltr"
+            >
+              {stock.positive ? (
+                <RiArrowUpSFill size={16} />
+              ) : (
+                <RiArrowDownSFill size={16} />
+              )}
+              {stock.positive ? "+" : "-"}
+              {stock.change.toFixed(2)}
+              <span className="opacity-70">
+                ({stock.changePercent.toFixed(2)}%)
+              </span>
+            </div>
           </div>
         </div>
       </div>

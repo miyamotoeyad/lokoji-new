@@ -112,7 +112,7 @@ export async function getETFs(): Promise<ETFItem[]> {
       } satisfies ETFItem;
     }),
   );
-  return results;
+  return results.sort((a, b) => b.point - a.point);
 }
 
 // ── Helpers for filtering by category ───────────────────────────────────────

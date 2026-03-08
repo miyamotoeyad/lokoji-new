@@ -253,12 +253,6 @@ export const EGX_STOCKS = [
     titleEn: "ATQA Energy",
   },
   {
-    code: "FERC",
-    yahooCode: "FERC.CA",
-    titleAr: "مصر للتكرير",
-    titleEn: "Egyptian Refining Company",
-  },
-  {
     code: "EFID",
     yahooCode: "EFID.CA",
     titleAr: "مصر للوقود",
@@ -424,7 +418,7 @@ export const EGX_STOCKS = [
   },
   {
     code: "MGPC",
-    yahooCode: "EGS7D971C011.CA",
+    yahooCode: "EGS381B1C015.CA",
     titleAr: "العاشر من رمضان للصيدلانيات",
     titleEn: "Tenth Of Ramadan Pharmaceutical",
   },
@@ -695,13 +689,5 @@ export const EGX_STOCKS = [
     yahooCode: "ALKN.CA",
     titleAr: "الكنانة للصناعة",
     titleEn: "Alkannana Industries",
-  },
-
-  // ── MISC INDUSTRIAL ───────────────────────────────────────────────────────
-  {
-    code: "MPCI",
-    yahooCode: "MPCI.CA",
-    titleAr: "الشركة المصرية للمشروعات",
-    titleEn: "Egyptian Projects Co",
   },
 ];

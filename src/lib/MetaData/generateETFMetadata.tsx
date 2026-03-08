@@ -10,7 +10,12 @@ export async function generateETFMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL || "https://lokoji.com";
-  const canonical = `${siteUrl}/etfs/${slug}`;
+  const canonical = siteUrl + "/etfs/" + slug;
+
+  const imageUrl = "/main.webp"
+  const imageAlt = "Lokoji - Market Pulse"
+  const imageWidth = 1200
+  const imageHeight = 630
 
   try {
     const etfs = await getETFs();
@@ -18,21 +23,31 @@ export async function generateETFMetadata({
 
     if (!item) return { title: "صندوق غير موجود" };
 
+    const title = item.title;
+    const description = `تابع أداء ${item.titleEn} — السعر الحالي والتغيير اليومي على البورصة.`;
+
     return {
-      title: `${item.title}`,
-      description: `تابع أداء ${item.titleEn} — السعر الحالي والتغيير اليومي على البورصة.`,
+      title,
+      description,
       alternates: { canonical },
       openGraph: {
-        title: `${item.title}`,
-        description: `تابع أداء ${item.titleEn} — السعر الحالي والتغيير اليومي.`,
+        title,
+        description,
         url: canonical,
         siteName: "لوكوجي",
         type: "website",
+        images: {
+          url: imageUrl,
+          width: imageWidth,
+          height: imageHeight,
+          alt: imageAlt,
+          type: "image/png",
+        },
       },
       twitter: {
         card: "summary",
-        title: `${item.title}`,
-        description: `تابع أداء ${item.titleEn} — السعر الحالي والتغيير اليومي.`,
+        title,
+        description,
       },
     };
   } catch {

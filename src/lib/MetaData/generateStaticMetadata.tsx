@@ -20,8 +20,8 @@ export function generateStaticMetadata({
   url,
   imageUrl = "/main.webp",
   imageAlt = "Lokoji - Market Pulse",
-  imageWidth = 800,
-  imageHeight = 600,
+  imageWidth = 1200,
+  imageHeight = 630,
 }: StaticMetaOptions): Metadata {
   return {
     title,

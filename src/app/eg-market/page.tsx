@@ -13,7 +13,8 @@ import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { Metadata } from "next";
 
 const title = "البورصة المصرية | متابعة حية للأسهم";
-const description = "تابع أسعار الأسهم والشركات المدرجة في البورصة المصرية لحظة بلحظة.";
+const description =
+  "تابع أسعار الأسهم والشركات المدرجة في البورصة المصرية لحظة بلحظة.";
 
 export const metadata: Metadata = generateStaticMetadata({
   title,
@@ -43,7 +44,7 @@ export default async function MarketPage() {
             البورصة المصرية
           </h1>
           <p className="text-muted-foreground font-medium text-lg">
-            بيانات من Yahoo Finance · تُحدَّث كل 30 دقيقة
+            تابع معانا أسعار أسهم الشركات المصرية لحظة بلحظة.
           </p>
         </div>
 
@@ -78,52 +79,56 @@ export default async function MarketPage() {
             >
               {/* Top row */}
               <div className="flex items-center justify-between">
-                <span
-                  className="text-[10px] font-black text-primary-brand bg-primary-brand/10 px-2.5 py-1 rounded-full"
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-[10px] text-right font-black text-primary-brand bg-primary-brand/10 px-2.5 py-1 rounded-full"
+                    dir="ltr"
+                  >
+                    {stock.code}
+                  </span>
+                </div>
+
+                {/* Change pill */}
+                <div
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black w-fit ${
+                    stock.positive
+                      ? "bg-green-500/10 text-green-500"
+                      : "bg-destructive/10 text-destructive"
+                  }`}
                   dir="ltr"
                 >
-                  {stock.code}
-                </span>
-                <RiExternalLinkLine
-                  size={13}
-                  className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                />
+                  {stock.positive ? (
+                    <RiArrowUpSFill size={14} />
+                  ) : (
+                    <RiArrowDownSFill size={14} />
+                  )}
+                  {stock.positive ? "+" : "-"}
+                  {stock.changePercent.toFixed(2)}%
+                </div>
               </div>
 
               {/* Name */}
-              <h3 className="font-black text-sm text-foreground group-hover:text-primary-brand transition-colors line-clamp-2 leading-snug flex-1">
+              <h3 className="font-black text-sm text-muted-foreground group-hover:text-primary-brand transition-colors line-clamp-2 leading-snug flex-1">
                 {stock.titleAr}
               </h3>
 
               {/* Price */}
-              <p
-                className="text-base font-black text-foreground tabular-nums"
-                dir="ltr"
-              >
-                {stock.price.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}
-                <span className="text-[10px] text-muted-foreground font-bold mr-1">
-                  EGP
-                </span>
-              </p>
-
-              {/* Change pill */}
-              <div
-                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black w-fit ${
-                  stock.positive
-                    ? "bg-green-500/10 text-green-500"
-                    : "bg-destructive/10 text-destructive"
-                }`}
-                dir="ltr"
-              >
-                {stock.positive ? (
-                  <RiArrowUpSFill size={14} />
-                ) : (
-                  <RiArrowDownSFill size={14} />
-                )}
-                {stock.positive ? "+" : "-"}
-                {stock.changePercent.toFixed(2)}%
+              <div className="flex justify-between items-end">
+                <p
+                  className="lg:text-xl text-3xl font-black text-right text-foreground tabular-nums"
+                  dir="ltr"
+                >
+                  {stock.price.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                  <span className="text-[10px] text-muted-foreground font-bold mr-1">
+                    EGP
+                  </span>
+                </p>
+                <RiExternalLinkLine
+                  size={13}
+                  className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                />
               </div>
             </Link>
           ))}

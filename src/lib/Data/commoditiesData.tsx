@@ -1,3 +1,4 @@
+import { EGY_FUEL_PRICES_EGP } from "../Array/EgyptPetrolList";
 import { getExchangeRates } from "./exchangeData";
 
 export interface CommodityItem {
@@ -14,18 +15,6 @@ export interface CommodityItem {
 }
 
 const OZ_TO_GRAM = 31.1035;
-
-// 🇪🇬 Official Egyptian fuel prices — set by price committee (last update: Aug 2024)
-// Update manually when the committee issues new prices
-const EGY_FUEL_PRICES_EGP = {
-  petrol80: 17.75,
-  petrol92: 19.25,
-  petrol95: 21.0,
-  kerosene: 17.5,
-  solar: 17.5,
-  gasStove: 225.0,
-  diesel: 10.75,
-};
 
 async function getMetalRates(): Promise<{ xauUSD: number; xagUSD: number }> {
   try {

@@ -10,7 +10,12 @@ export async function generateCategoryMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL || "https://lokoji.com";
-  const canonical = `${siteUrl}/articles/category/${slug}`;
+  const canonical = siteUrl + "/articles/category/" + slug
+
+  const imageUrl = "/main.webp"
+  const imageAlt = "Lokoji - Market Pulse"
+  const imageWidth = 1200
+  const imageHeight = 630
 
   const navTitle = CatMenu.find((item) => item.link.toString() === slug);
   if (!navTitle) return { title: "قسم غير موجود" };
@@ -28,6 +33,13 @@ export async function generateCategoryMetadata({
       url: canonical,
       siteName: "لوكوجي",
       type: "website",
+      images: {
+          url: imageUrl,
+          width: imageWidth,
+          height: imageHeight,
+          alt: imageAlt,
+          type: "image/png",
+        },
     },
     twitter: {
       card: "summary",
