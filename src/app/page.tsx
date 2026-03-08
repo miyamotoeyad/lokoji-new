@@ -18,7 +18,6 @@ import {
 import { getExchangeRates } from "@/lib/Data/exchangeData";
 import { getETFs, type ETFItem } from "@/lib/Data/etfData";
 import { getCommodities, type CommodityItem } from "@/lib/Data/commoditiesData";
-import { client } from "@/utils/contentful";
 import { getCryptoData } from "@/lib/Data/getCryptoData";
 import {
   getWorldMarketData,
@@ -34,6 +33,7 @@ import { MarketData } from "@/app/crypto/page";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
 import { Entry, Asset, AssetFile } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
+import getArticles from "@/utils/Content/getArticles";
 
 // ── unique sectors list ───────────────────────────────────────────────────────
 const SECTORS = Array.from(new Set(WORLD_STOCKS_CONFIG.map((s) => s.sector)));
@@ -48,7 +48,7 @@ async function getHomeData() {
     worldIndices,
     worldStocks,
   ] = await Promise.all([
-    client.getEntries({ content_type: "articles", order: ["-sys.createdAt"] }),
+    getArticles(),
     getExchangeRates("USD"),
     getETFs(),
     getCommodities(),
@@ -75,7 +75,7 @@ async function getHomeData() {
   ];
 
   return {
-    articles: contentfulRes.items,
+    articles: contentfulRes,
     widgetPairs,
     etfs,
     commodities,
@@ -116,9 +116,9 @@ function ChangePill({
 }
 
 const REGION_FLAG: Record<string, string> = {
-  أمريكا: "🇺🇸",
-  أوروبا: "🇪🇺",
-  آسيا: "🌏",
+  أمريكا: "US",
+  أوروبا: "EU",
+  آسيا: "AS",
   "الشرق الأوسط": "MENA",
   أفريقيا: "AF",
   "أمريكا اللاتينية": "LA",
@@ -333,7 +333,7 @@ export default async function Home() {
 
                     {/* Price */}
                     <p
-                      className="text-lg font-black text-foreground tabular-nums group-hover:text-primary-brand transition-colors"
+                      className="text-lg font-black text-foreground tabular-nums group-hover:text-primary-brand text-right transition-colors"
                       dir="ltr"
                     >
                       {item.price.toLocaleString("en-US", {
@@ -342,7 +342,7 @@ export default async function Home() {
                     </p>
 
                     {/* Change */}
-                    <div className="flex items-center gap-1.5" dir="ltr">
+                    <div className="flex text-right gap-1.5" dir="rtl">
                       <span
                         className={`text-[10px] font-black ${
                           item.positive

@@ -50,7 +50,7 @@ function addItem(feed: RSS, post: ContentfulPost) {
 export async function GET() {
   const res = await client.getEntries({
     content_type: "articles",
-    order: ["-sys.createdAt"],
+    order: ["-fields.publicationDate"],
     limit: 500,
   });
 

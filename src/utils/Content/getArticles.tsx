@@ -22,7 +22,7 @@ export default async function getArticles() {
   const res = await client.getEntries<TypeArticlesSkeleton>({
     content_type: "articles",
     // Good practice: order by date descending so newest is first
-    order: ["-sys.createdAt"],
+    order: ["-fields.publicationDate"],
   });
 
   return res.items;
