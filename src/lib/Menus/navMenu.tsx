@@ -49,9 +49,4 @@ export const NavLinks: NavLink[] = [
     link: "/support",
     id: 5,
   },
-  {
-    title: "سياسة الخصوصية",
-    link: "/privacy-policy",
-    id: 7,
-  },
 ];
