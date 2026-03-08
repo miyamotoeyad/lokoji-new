@@ -42,10 +42,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/main.webp",
         width: 1200,
         height: 630,
-        alt: "لوجو لوكوجي الاقتصادي",
+        alt: "لوكوجي الاقتصادي",
       },
     ],
   },
