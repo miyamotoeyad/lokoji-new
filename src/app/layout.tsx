@@ -1,11 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google'
+
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Provider from "./Provider";
 import ScrollButton from "@/components/Client/ScrollBtn";
 import CookieBanner from "@/components/Client/CookieBanner";
+
 import {
   generateBreadcrumbSchema,
   organizationSchema,
@@ -116,6 +119,7 @@ export default function RootLayout({
           <CookieBanner />
         </Provider>
       </body>
+      <GoogleAnalytics gaId="G-L2L744B91L" />
     </html>
   );
 }

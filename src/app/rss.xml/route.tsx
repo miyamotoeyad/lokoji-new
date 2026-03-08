@@ -10,7 +10,7 @@ function buildFeed(title: string, description: string, feedSlug: string) {
     site_url: siteUrl,
     feed_url: `${siteUrl}/${feedSlug}`,
     language: "ar",
-    image_url: `${siteUrl}/og-image.png`,
+    image_url: `${siteUrl}/main.webp`,
     copyright: `كل الحقوق محفوظة ${new Date().getFullYear()} — لوكوجي`,
     pubDate: new Date(),
   });
