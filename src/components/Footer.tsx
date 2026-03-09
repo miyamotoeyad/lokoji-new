@@ -218,7 +218,7 @@ export default function Footer() {
             {footerLinks.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={`${link.href}`}
                 className="text-xs font-bold text-muted-foreground hover:text-primary-brand transition-colors duration-200"
               >
                 {link.label}
