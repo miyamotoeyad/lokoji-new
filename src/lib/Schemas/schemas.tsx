@@ -76,7 +76,9 @@ export function generateBreadcrumbSchema() {
 
   // Append footer links
   footerLinks.forEach((f) => {
-    items.push({ name: f.label, link: f.href });
+    if (f.href) {
+      items.push({ name: f.label, link: f.href });
+    }
   });
 
   return {
