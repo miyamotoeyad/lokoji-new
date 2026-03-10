@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -17,8 +17,9 @@ import {
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300" ,"400", "600", "700"], 
   variable: "--font-ibm-plex",
+  display: "swap",
 });
 
 const title = "%s — لوكوجي";
@@ -83,6 +84,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://images.ctfassets.net" />
         <meta name="apple-mobile-web-app-title" content="Lokoji" />
         <script
           type="application/ld+json"
@@ -103,7 +105,8 @@ export default function RootLayout({
       </head>
       <body
         className={`
-          ${ibmPlexArabic.variable} ${ibmPlexArabic.className}
+          ${ibmPlexArabic.variable}
+           ${ibmPlexArabic.className}
           antialiased
           bg-background text-foreground
           transition-colors duration-300
@@ -118,8 +121,8 @@ export default function RootLayout({
           <ScrollButton />
           <CookieBanner />
         </Provider>
+        <GoogleAnalytics gaId="G-L2L744B91L" />
       </body>
-      <GoogleAnalytics gaId="G-L2L744B91L" />
     </html>
   );
 }

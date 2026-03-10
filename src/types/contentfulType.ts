@@ -19,26 +19,12 @@ export type AuthorSkeleton = EntrySkeletonType<TypeAuthorsFields, "authors">;
 export interface TypeArticlesFields {
   title: EntryFieldTypes.Symbol;
   slug: EntryFieldTypes.Symbol;
-  subtitle: EntryFieldTypes.Symbol; // ✅ added
+  subtitle: EntryFieldTypes.Symbol;
   author: EntryFieldTypes.EntryLink<AuthorSkeleton>;
-  category: EntryFieldTypes.Symbol<
-    | "آراء"
-    | "اتعلم اقتصاد"
-    | "الاقتصاد العالمي"
-    | "الاقتصاد المصري"
-    | "السلع"
-    | "الطاقة"
-    | "العملات"
-    | "تكنولوجيا"
-    | "سندات"
-    | "سياسة"
-    | "شركات"
-    | "صناديق الاستثمار"
-    | "كريبتو"
-  >;
-  publicationDate: EntryFieldTypes.Date; // ✅ added
+  category: EntryFieldTypes.Symbol;
+  publicationDate: EntryFieldTypes.Date;
   image: EntryFieldTypes.AssetLink;
-  tag: EntryFieldTypes.Array<EntryFieldTypes.Symbol>; // ✅ added
-  content: EntryFieldTypes.RichText; // ✅ added
+  tag: EntryFieldTypes.Array<EntryFieldTypes.Symbol>;
+  content: EntryFieldTypes.RichText;
 }
 export type ArticleSkeleton = EntrySkeletonType<TypeArticlesFields, "articles">;

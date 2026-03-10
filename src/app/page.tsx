@@ -142,6 +142,9 @@ export default async function Home() {
     .filter((g) => g.stocks.length > 0)
     .slice(0, 8);
 
+  const cryptoTop = cryptoList.slice(0, 6);
+  const cryptoSidebar = cryptoList.slice(0, 5);
+
   return (
     <main className="min-h-screen transition-colors duration-500" dir="rtl">
       <div className="container mx-auto px-4 py-8 space-y-12">
@@ -150,6 +153,7 @@ export default async function Home() {
           <div className="lg:col-span-7 lg:row-span-2 relative rounded-3xl overflow-hidden md:min-h-130 group shadow-xl">
             <ArtSquCard
               article={articles[0] as Entry<ArticleSkeleton, undefined, string>}
+              priority
             />
             <div className="absolute top-5 right-5 flex gap-2 pointer-events-none">
               <span className="bg-primary-brand text-white px-3 py-1 rounded-full text-[10px] font-black shadow">
@@ -164,6 +168,7 @@ export default async function Home() {
             <ArtSquCard
               article={articles[1] as Entry<ArticleSkeleton, undefined, string>}
               variant="hero"
+              priority
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent pointer-events-none" />
           </div>
@@ -243,7 +248,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {cryptoList.slice(0, 6).map((coin: MarketData) => {
+            {cryptoTop.map((coin: MarketData) => {
               const change = coin.quote.USD.percent_change_1h;
               const isUp = change >= 0;
               const color = isUp ? "#22c55e" : "var(--color-destructive)";
@@ -483,14 +488,13 @@ export default async function Home() {
           {/* ── Articles ── */}
           <div className="lg:col-span-8 space-y-12">
             <div className="flex items-center justify-between">
-    
               <div className="flex items-center gap-3">
-              <span className="w-1 h-7 bg-primary-brand rounded-full block shrink-0" />
-              <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
-                <RiArticleLine size={16} />
+                <span className="w-1 h-7 bg-primary-brand rounded-full block shrink-0" />
+                <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+                  <RiArticleLine size={16} />
+                </div>
+                <h2 className="text-2xl font-black">آخر الأخبار</h2>
               </div>
-              <h2 className="text-2xl font-black">آخر الأخبار</h2>
-            </div>
               <Link href="/articles" className="btn text-xs py-2 px-4">
                 كل الأخبار <RiArrowLeftSLine size={14} />
               </Link>
@@ -544,9 +548,9 @@ export default async function Home() {
             </div>
             <Link
               href="/articles"
-              className="flex items-center justify-center w-full py-5 border-2 border-dashed border-border rounded-3xl text-muted-foreground font-black text-sm hover:border-primary-brand hover:text-primary-brand transition-all duration-300"
+              className="flex items-center gap-7 justify-center w-full py-5 border-2 border-dashed border-border rounded-3xl text-muted-foreground font-black text-sm hover:border-primary-brand hover:text-primary-brand transition-all duration-300"
             >
-              ← تحميل المزيد من المقالات
+              تحميل المزيد من المقالات <RiArrowLeftSLine size={14} />
             </Link>
           </div>
 
@@ -569,7 +573,7 @@ export default async function Home() {
                 </Link>
               </div>
               <div className="divide-y divide-border">
-                {cryptoList.slice(0, 5).map((coin: MarketData) => {
+                {cryptoSidebar.slice(0, 5).map((coin: MarketData) => {
                   const change = coin.quote.USD.percent_change_1h;
                   return (
                     <Link

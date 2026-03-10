@@ -5,7 +5,7 @@ import Content from "@/components/Articles/Content";
 import Share from "@/components/Articles/Share";
 import Tag from "@/components/Articles/Tag";
 import AlsoRead from "@/components/Articles/AlsoRead";
-import GoogleNews from "@/components/Articles/GoogleNews";
+// import GoogleNews from "@/components/Articles/GoogleNews";
 import { client } from "@/utils/contentful";
 import { TypeArticlesSkeleton, TypeAuthorsSkeleton } from "@/types";
 import getArticles, { getArticle } from "@/utils/Content/getArticles";
@@ -13,6 +13,7 @@ import { Entry } from "contentful";
 import { AuthorDetailsCard } from "@/components/Articles/AuthorDetailsCard";
 import { generateArticleMetadata } from "@/lib/MetaData/generateArticleMetadata";
 import { getJsonLdArticle, getJsonLdImage } from "@/lib/Schemas/getJsonLd";
+import InfiniteArticleFeed from "../InfiniteArticles";
 
 type Params = Promise<{ slug: string }>;
 
@@ -45,45 +46,9 @@ export default async function ArticlePage({ params }: { params: Params }) {
     <main className="max-w-7xl mx-auto px-4 py-8 md:py-16" dir="rtl">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* ── MAIN ARTICLE ── */}
-        <article className="lg:col-span-8 space-y-10">
-          {/* Header */}
-          <header>
-            <Header articles={data} />
-          </header>
-
-          {/* Body */}
-          <div
-            className="prose prose-lg dark:prose-invert max-w-none
-            prose-headings:font-black prose-headings:text-foreground
-            prose-p:text-muted-foreground prose-p:leading-relaxed
-            prose-a:text-primary-brand prose-a:no-underline hover:prose-a:underline
-            prose-blockquote:border-primary-brand prose-blockquote:text-muted-foreground
-            prose-strong:text-foreground prose-img:rounded-3xl prose-img:shadow-lg"
-          >
-            <Content articles={data} />
-          </div>
-
-          {/* Footer actions */}
-          <div className="border-t border-border pt-8 space-y-8">
-            <Share articles={data.fields} />
-            <Tag articles={data} />
-            {isAuthorResolved ? (
-              <AuthorDetailsCard
-                authorEntry={
-                  data.fields.author as Entry<
-                    TypeAuthorsSkeleton,
-                    undefined,
-                    string
-                  >
-                }
-              />
-            ) : (
-              <div className="p-4 bg-muted rounded-xl text-center text-sm">
-                أسرة تحرير لوكوجي
-              </div>
-            )}
-            <GoogleNews />
-          </div>
+        <article className="lg:col-span-8">
+          {/* Feed handles first article + all subsequent ones */}
+          <InfiniteArticleFeed initial={data} />
         </article>
 
         {/* ── SIDEBAR ── */}

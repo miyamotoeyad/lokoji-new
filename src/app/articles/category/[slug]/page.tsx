@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Entry } from "contentful";
 import { RiPriceTag3Line } from "react-icons/ri";
 import Link from "next/link";
@@ -6,33 +6,71 @@ import Link from "next/link";
 import { CatMenu } from "@/lib/Menus/categoryMenu";
 import { ArticleSkeleton } from "@/types/contentfulType";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
-import getArticles from "@/utils/Content/getArticles";
+import { getArticlesByCategory } from "@/utils/Content/getArticles";
 import { CategoryParams, generateCategoryMetadata } from "@/lib/MetaData/generateCategoryMetadata";
+import { Pagination } from "@/components/Articles/Pagination/Pagination";
+import { PaginationSchema } from "@/components/Articles/Pagination/PaginationSchema";
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ page?: string }>;
 
-// ── Static paths ──
+const ARTICLES_PER_PAGE = 9;
+
 export async function generateStaticParams() {
   return CatMenu.map((item) => ({ slug: item.link.toString() }));
 }
 
-// ── Metadata ──
-export async function generateMetadata({ params }: { params: CategoryParams }) {
-  return generateCategoryMetadata({ params });
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: CategoryParams;
+  searchParams: SearchParams;
+}) {
+  const { slug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
+
+  const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL || "http://localhost:3000";
+  const baseUrl = `${siteUrl}/articles/category/${slug}`;
+  const canonicalUrl = currentPage === 1 ? baseUrl : `${baseUrl}?page=${currentPage}`;
+
+  const base = await generateCategoryMetadata({ params });
+
+  return {
+    ...base,
+    alternates: { canonical: canonicalUrl },
+    ...(currentPage > 1 && {
+      other: {
+        "link-prev": currentPage === 2 ? baseUrl : `${baseUrl}?page=${currentPage - 1}`,
+      },
+    }),
+  };
 }
 
-// ── Page ──
-export default async function CategoryPage({ params }: { params: Params }) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { slug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
 
   const navTitle = CatMenu.find((item) => item.link.toString() === slug);
   if (!navTitle) return notFound();
 
-  const allArticles = await getArticles();
-
-  const filtered = allArticles.filter((article) =>
-    ((article.fields.category as string) ?? "").includes(navTitle.title)
+  const { items, total, totalPages } = await getArticlesByCategory(
+    navTitle.title,
+    currentPage,
+    ARTICLES_PER_PAGE
   );
+
+  if (total > 0 && currentPage > totalPages) {
+    redirect(`/articles/category/${slug}?page=${totalPages}`);
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-10" dir="rtl">
@@ -58,10 +96,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
 
       {/* ── CATEGORY FILTER ── */}
       <div className="flex gap-2 mb-10 overflow-x-auto pb-2 no-scrollbar">
-        <Link
-          href="/articles"
-          className="shrink-0 btn text-xs py-2 px-5 whitespace-nowrap"
-        >
+        <Link href="/articles" className="shrink-0 btn text-xs py-2 px-5 whitespace-nowrap">
           الكل
         </Link>
         {CatMenu.map((menu) => (
@@ -81,15 +116,30 @@ export default async function CategoryPage({ params }: { params: Params }) {
       </div>
 
       {/* ── ARTICLE GRID ── */}
-      {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((article) => (
-            <ArtSquCard
-              key={article.sys.id}
-              article={article as Entry<ArticleSkeleton, undefined, string>}
-            />
-          ))}
-        </div>
+      {items.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((article, index) => (
+              <ArtSquCard
+                key={article.sys.id}
+                article={article as Entry<ArticleSkeleton, undefined, string>}
+                priority={index < 3}
+              />
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            basePath={`/articles/category/${slug}`}
+          />
+
+          <PaginationSchema
+            articles={items as Entry<ArticleSkeleton, undefined, string>[]}
+            currentPage={currentPage}
+            articlesPerPage={ARTICLES_PER_PAGE}
+          />
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center py-32 text-center gap-4">
           <div className="w-16 h-16 rounded-3xl bg-muted flex items-center justify-center">

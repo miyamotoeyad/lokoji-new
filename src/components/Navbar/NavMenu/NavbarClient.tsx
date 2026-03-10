@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import {
@@ -14,6 +12,7 @@ import SearchBox from "./SearchBox";
 import NavList from "./NavList";
 import MarketTickerBar from "./MarketTickerBar";
 import type { TickerItem } from "@/lib/Data/tickerData";
+import NavLogo from "./NavLogo";
 
 export default function NavbarClient({
   tickerItems,
@@ -60,16 +59,7 @@ export default function NavbarClient({
 
             <div className="h-6 w-px bg-border hidden md:block" />
 
-            <Link href="/" suppressHydrationWarning>
-              <Image
-                alt="Lokoji"
-                src={resolvedTheme === "dark" ? "/Logo.svg" : "/Black Logo.svg"}
-                width={110}
-                height={35}
-                priority
-                suppressHydrationWarning
-              />
-            </Link>
+            <NavLogo />
           </div>
 
           {/* RIGHT: Search + Theme Toggle */}

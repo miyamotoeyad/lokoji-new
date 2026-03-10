@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import {
   RiFacebookCircleFill,
@@ -13,6 +11,7 @@ import {
 } from "react-icons/ri";
 import { footerLinks } from "@/lib/Menus/footerMenu";
 import { NavLinks } from "@/lib/Menus/navMenu";
+import FooterLogo from "./FooterLogo";
 
 const socials = [
   {
@@ -42,7 +41,6 @@ interface NewsletterForm {
 }
 
 export default function Footer() {
-  const { resolvedTheme } = useTheme();
 
   const {
     register,
@@ -70,21 +68,7 @@ export default function Footer() {
           <div className="flex flex-col gap-8">
             {/* Brand */}
             <div className="flex flex-col gap-6">
-              <Link
-                href="/"
-                className="hover:opacity-80 transition-opacity w-fit"
-              >
-                <Image
-                  src={
-                    resolvedTheme === "dark" ? "/Logo.svg" : "/Black Logo.svg"
-                  }
-                  alt="لوجو لوكوجي"
-                  width={160}
-                  height={52}
-                  priority
-                  suppressHydrationWarning
-                />
-              </Link>
+              <FooterLogo />
 
               <p className="text-muted-foreground text-sm leading-loose max-w-sm">
                 لوكوجي{" "}

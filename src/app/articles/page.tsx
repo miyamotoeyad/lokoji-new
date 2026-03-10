@@ -3,23 +3,75 @@ import Link from "next/link";
 import { RiArchiveLine } from "react-icons/ri";
 import { CatMenu } from "@/lib/Menus/categoryMenu";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
-import getArticles from "@/utils/Content/getArticles";
+import { getArticlesPaginated } from "@/utils/Content/getArticles"; // ← remove getArticles
 import { Entry } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
+import { Pagination } from "@/components/Articles/Pagination/Pagination";
+import { PaginationSchema } from "@/components/Articles/Pagination/PaginationSchema";
+import { redirect } from "next/navigation";
 
 const description =
   "كل المقالات والآراء الاقتصادية هتلاقيها عندنا وبشكل مبسط وأخبار أول بأول - لوكوجي نبض الاقتصاد.";
 const title = "الأرشيف الاقتصادي | مقالات لوكوجي";
 
-export const metadata: Metadata = generateStaticMetadata({
-  title,
-  description,
-  url: "/articles",
-});
+// app/articles/page.tsx
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
+  const { totalPages } = await getArticlesPaginated(
+    currentPage,
+    ARTICLES_PER_PAGE,
+  );
 
-export default async function Page() {
-  const data = await getArticles();
+  const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL || "http://localhost:3000";
+  const baseUrl = `${siteUrl}/articles`;
+
+  // Clamp: if someone requests ?page=999 but only 5 pages exist, canonical points to last real page
+  const clampedPage = Math.min(currentPage, totalPages);
+  const canonicalUrl =
+    clampedPage === 1 ? baseUrl : `${baseUrl}?page=${clampedPage}`;
+
+  return {
+    ...generateStaticMetadata({ title, description, url: "/articles" }),
+    alternates: {
+      canonical: canonicalUrl, // ← tells Google the real URL
+    },
+    // prev/next tell Google the pagination chain
+    ...(currentPage > 1 && {
+      other: {
+        "link-prev":
+          currentPage === 2 ? baseUrl : `${baseUrl}?page=${currentPage - 1}`,
+      },
+    }),
+    ...(currentPage < totalPages && {
+      other: {
+        "link-next": `${baseUrl}?page=${currentPage + 1}`,
+      },
+    }),
+  };
+}
+
+const ARTICLES_PER_PAGE = 12;
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
+
+  const { items, totalPages } = await getArticlesPaginated(currentPage, ARTICLES_PER_PAGE);
+
+  // Redirect out-of-range requests — Googlebot won't index phantom pages
+  if (currentPage > totalPages) {
+    redirect(`/articles?page=${totalPages}`);
+  }
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-10" dir="rtl">
@@ -64,22 +116,28 @@ export default async function Page() {
 
       {/* ── ARTICLE GRID ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((article) => (
-          <ArtSquCard
-            key={article.sys.id}
-            article={article as Entry<ArticleSkeleton, undefined, string>}
-          />
-        ))}
+        {items.map(
+          (
+            article,
+            index, // ← items, not data
+          ) => (
+            <ArtSquCard
+              key={article.sys.id}
+              article={article as Entry<ArticleSkeleton, undefined, string>}
+              priority={index < 3} // ← only first row preloads
+            />
+          ),
+        )}
       </div>
 
-      {/* ── LOAD MORE ── */}
-      {data.length > 9 && (
-        <div className="mt-16 flex justify-center">
-          <button className="btn px-10 py-4 text-sm">
-            تحميل المزيد من المقالات
-          </button>
-        </div>
-      )}
+      {/* ── PAGINATION ── */}
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
+
+      {/* ── SCHEMA ── */}
+      <PaginationSchema
+        articles={items as Entry<ArticleSkeleton, undefined, string>[]}
+        currentPage={currentPage}
+      />
     </section>
   );
 }

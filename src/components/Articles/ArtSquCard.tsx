@@ -9,11 +9,15 @@ import { ArticleSkeleton } from "@/types/contentfulType";
 interface ArtSquCardProps {
   article: Entry<ArticleSkeleton, undefined, string>;
   variant?: "hero" | "grid";
+  priority?: boolean;
+  sizes?: string;
 }
 
 export default function ArtSquCard({
   article,
   variant = "grid",
+  priority = false,
+  sizes
 }: ArtSquCardProps) {
   if (!article || !article.fields) return null;
 
@@ -21,13 +25,20 @@ export default function ArtSquCard({
 
   const asset = image as Asset;
   const file = asset?.fields?.file as AssetFile | undefined;
-  const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
+  const rawUrl = file?.url ? `https:${file.url}` : null;
 
-  const date = new Date(article.fields.publicationDate).toLocaleDateString("ar-EG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const imageUrl = rawUrl
+    ? `${rawUrl}?w=${variant === "hero" ? 1200 : 800}&fm=webp&q=75&fit=fill`
+    : "/no-image.png";
+
+  const date = new Date(article.fields.publicationDate).toLocaleDateString(
+    "ar-EG",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    },
+  );
 
   /* ── HERO VARIANT ── */
   if (variant === "hero") {
@@ -41,9 +52,9 @@ export default function ArtSquCard({
           alt={(title as string) || "Article Image"}
           src={imageUrl}
           fill
-          priority
+          priority={priority}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          sizes="(max-width: 1024px) 100vw, 58vw"
+          sizes={sizes ?? "(max-width: 1024px) 100vw, 58vw"}
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-transparent" />
 
@@ -82,6 +93,7 @@ export default function ArtSquCard({
           alt={(title as string) || "Article Image"}
           src={imageUrl}
           fill
+          priority={priority}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />

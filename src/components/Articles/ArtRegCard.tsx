@@ -9,9 +9,13 @@ import { RiCalendar2Line, RiArrowLeftLine } from "react-icons/ri";
 
 interface ArtRegCardProps {
   article: Entry<ArticleSkeleton, undefined, string>;
+  priority?: boolean;
 }
 
-export default function ArtRegCard({ article }: ArtRegCardProps) {
+export default function ArtRegCard({
+  article,
+  priority = false,
+}: ArtRegCardProps) {
   // Safety check to prevent crash if data is still loading or missing
   if (!article || !article.fields) return null;
 
@@ -19,11 +23,14 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
 
   const asset = image as Asset;
   const file = asset?.fields?.file as AssetFile | undefined;
-  const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
+  const rawUrl = file?.url ? `https:${file.url}` : null;
+  const imageUrl = rawUrl
+    ? `${rawUrl}?w=900&fm=webp&q=75&fit=fill`
+    : "/no-image.png";
 
   return (
-    <Link 
-      href={`/post/${slug}`} 
+    <Link
+      href={`/post/${slug}`}
       className="group flex flex-col lg:flex-row gap-8 p-6 lg:p-8 rounded-[2.5rem] bg-white dark:bg-dprimary shadow-xl hover:shadow-2xl border border-slate-100 dark:border-dlight/30 transition-all duration-500"
       dir="rtl"
     >
@@ -34,7 +41,7 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
           alt={title || "صورة المقال"}
           src={imageUrl}
           fill
-          priority // Hero image should load first
+          priority={priority} // 👈 was hardcoded true
           sizes="(max-width: 1024px) 100vw, 45vw"
         />
         {/* Category Overlay for Mobile */}
@@ -48,8 +55,10 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
         <div>
           {/* Category Badge - Desktop */}
           <div className="hidden lg:inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary rounded-xl px-5 py-2 mb-6 transition-colors group-hover:bg-primary group-hover:text-white">
-             <span className="w-2 h-2 rounded-full bg-primary group-hover:bg-white animate-pulse" />
-             <span className="text-sm font-black uppercase tracking-widest">{category}</span>
+            <span className="w-2 h-2 rounded-full bg-primary group-hover:bg-white animate-pulse" />
+            <span className="text-sm font-black uppercase tracking-widest">
+              {category}
+            </span>
           </div>
 
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight text-slate-900 dark:text-white mb-6 group-hover:text-primary transition-colors duration-300">
@@ -58,7 +67,8 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
 
           {/* Optional: Summary (if you have this field in Contentful) */}
           <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed line-clamp-3 mb-8">
-            {subtitle || "تابع آخر التطورات والتحليلات الحصرية حول هذا الموضوع عبر لوكوجي، حيث نقدم لك الرؤية الكاملة للسوق المصري والعالمي."}
+            {subtitle ||
+              "تابع آخر التطورات والتحليلات الحصرية حول هذا الموضوع عبر لوكوجي، حيث نقدم لك الرؤية الكاملة للسوق المصري والعالمي."}
           </p>
         </div>
 
@@ -67,17 +77,20 @@ export default function ArtRegCard({ article }: ArtRegCardProps) {
           <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-bold">
             <RiCalendar2Line size={20} className="text-primary" />
             <span>
-              {new Date(article.fields.publicationDate).toLocaleDateString("ar-EG", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
+              {new Date(article.fields.publicationDate).toLocaleDateString(
+                "ar-EG",
+                {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                },
+              )}
             </span>
           </div>
 
           <div className="flex items-center gap-2 text-primary font-black group-hover:gap-4 transition-all">
-             <span className="hidden sm:inline">اقرأ التفاصيل</span>
-             <RiArrowLeftLine size={24} />
+            <span className="hidden sm:inline">اقرأ التفاصيل</span>
+            <RiArrowLeftLine size={24} />
           </div>
         </div>
       </div>

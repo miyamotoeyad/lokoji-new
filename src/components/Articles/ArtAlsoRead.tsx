@@ -16,12 +16,18 @@ export default function ArtAlsoRead({ data }: ArtAlsoReadProps) {
 
   const asset = image as Asset;
   const file = asset?.fields?.file as AssetFile | undefined;
-  const imageUrl = file?.url ? `https:${file.url}` : "/no-image.png";
+  const rawUrl = file?.url ? `https:${file.url}` : null;
+  const imageUrl = rawUrl
+    ? `${rawUrl}?w=160&h=160&fm=webp&q=75&fit=fill`
+    : "/no-image.png";
 
-  const date = new Date(data.fields.publicationDate).toLocaleDateString("ar-EG", {
-    day: "numeric",
-    month: "short",
-  });
+  const date = new Date(data.fields.publicationDate).toLocaleDateString(
+    "ar-EG",
+    {
+      day: "numeric",
+      month: "short",
+    },
+  );
 
   return (
     <Link
