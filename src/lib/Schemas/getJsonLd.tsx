@@ -1,10 +1,10 @@
 import { Asset, AssetFile, Entry } from "contentful";
 import { TypeArticlesSkeleton, TypeAuthorsSkeleton } from "@/types";
 import { lokojiOrganization } from "./organizationSchema";
+import { InfographicCardData } from "@/app/infographics/InfographicGrid";
 
 const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL || "https://lokoji.com";
 
-// ── Helper: extract image URL from Contentful Asset ──────────────────────────
 function getContentfulImageUrl(image: unknown): string {
   if (!image || typeof image !== "object" || !("fields" in image))
     return `${siteUrl}/og-image.png`;
@@ -13,7 +13,6 @@ function getContentfulImageUrl(image: unknown): string {
   return file?.url ? `https:${file.url}` : `${siteUrl}/og-image.png`;
 }
 
-// ── Helper: extract author name safely ───────────────────────────────────────
 function getAuthorName(author: unknown): string {
   if (!author || typeof author !== "object" || !("fields" in author))
     return "لوكوجي";
@@ -56,7 +55,6 @@ export function getJsonLdArticle(
       : (category ?? "اقتصاد"),
     keywords: tags,
     inLanguage: "ar",
-
     image: {
       "@type": "ImageObject",
       url: imageUrl,
@@ -65,17 +63,13 @@ export function getJsonLdArticle(
       height: 630,
       caption: title,
     },
-
     description: subtitle,
-
     author: {
       "@type": "Person",
       name: authorName,
       url: `${siteUrl}/authors/${authorSlug}`,
     },
-
     publisher: lokojiOrganization,
-
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": articleUrl,
@@ -89,24 +83,9 @@ export function getJsonLdArticle(
       breadcrumb: {
         "@type": "BreadcrumbList",
         itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "الرئيسية",
-            item: siteUrl,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "المقالات",
-            item: `${siteUrl}/articles`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: title,
-            item: articleUrl,
-          },
+          { "@type": "ListItem", position: 1, name: "الرئيسية", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "المقالات", item: `${siteUrl}/articles` },
+          { "@type": "ListItem", position: 3, name: title, item: articleUrl },
         ],
       },
     },
@@ -126,10 +105,49 @@ export function getJsonLdImage(
     creditText: "لوكوجي",
     license: `${siteUrl}/privacy-policy`,
     acquireLicensePage: `${siteUrl}/privacy-policy`,
-    creator: {
-      "@type": "Organization",
-      name: "لوكوجي",
-    },
+    creator: { "@type": "Organization", name: "لوكوجي" },
+    copyrightNotice: `لوكوجي ${new Date().getFullYear()}`,
+  };
+}
+
+// ── Infographic Listing JSON-LD ───────────────────────────────────────────────
+export function getJsonLdInfographicListing(
+  infographics: InfographicCardData[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "إنفوجرافيك لوكوجي",
+    description: "تبسيط البيانات الاقتصادية المعقدة من خلال رسوم بيانية وتوضيحية سهلة الفهم.",
+    url: `${siteUrl}/infographics`,
+    hasPart: infographics.map((info) => ({
+      "@type": "ImageObject",
+      name: info.title,
+      url: `${siteUrl}/infographics/${info.slug}`,
+      contentUrl: info.imageUrl,
+      datePublished: info.date,
+    })),
+  };
+}
+
+// ── Infographic Single JSON-LD ────────────────────────────────────────────────
+export function getJsonLdInfographic(
+  slug: string,
+  title: string,
+  description: string,
+  publicationDate: string,
+  imageUrl: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    name: title,
+    description,
+    url: `${siteUrl}/infographics/${slug}`,
+    contentUrl: imageUrl,
+    datePublished: publicationDate,
+    creditText: "لوكوجي",
+    creator: lokojiOrganization,
     copyrightNotice: `لوكوجي ${new Date().getFullYear()}`,
   };
 }

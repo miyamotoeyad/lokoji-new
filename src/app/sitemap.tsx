@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: "/sitemap-pages/sitemap.xml", priority: 1.0, freq: "daily" },
     { url: "/articles/sitemap.xml", priority: 0.9, freq: "daily" },
     { url: "/articles/images/sitemap.xml", priority: 0.9, freq: "daily" },
+    { url: "/infographics/sitemap.xml", priority: 0.9, freq: "daily" },
     { url: "/eg-market/sitemap.xml", priority: 0.9, freq: "hourly" },
     { url: "/world-market/sitemap.xml", priority: 0.9, freq: "hourly" },
     { url: "/world-stocks/sitemap.xml", priority: 0.9, freq: "hourly" },

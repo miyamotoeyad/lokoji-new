@@ -28,3 +28,14 @@ export interface TypeArticlesFields {
   content: EntryFieldTypes.RichText;
 }
 export type ArticleSkeleton = EntrySkeletonType<TypeArticlesFields, "articles">;
+
+// ── Infographic Schema ────────────────────────────────────────────────────────
+export interface TypeInfographicFields {
+  title: EntryFieldTypes.Symbol;
+  slug: EntryFieldTypes.Symbol;
+  category: EntryFieldTypes.Symbol;  // ← added
+  description: EntryFieldTypes.Text;
+  publicationDate: EntryFieldTypes.Date;
+  images: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
+}
+export type InfographicSkeleton = EntrySkeletonType<TypeInfographicFields, "infographic">;
