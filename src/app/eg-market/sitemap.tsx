@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   egyStocks.forEach((stock) => {
     links.push({
-      url: `${siteUrl}/eg-market/${stock.slug}`,
+      url: siteUrl+ "/eg-market/" + stock.slug,
       lastModified: new Date(),
       changeFrequency: "hourly",
       priority: 0.7,

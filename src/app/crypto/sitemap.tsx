@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   cryptoRes.data.forEach(({ slug }) => {
     links.push({
-      url: siteUrl+ "/world-market/" + slug,
+      url: siteUrl+ "/crypto/" + slug,
       lastModified: new Date(),
       changeFrequency: "hourly",
       priority: 0.7,

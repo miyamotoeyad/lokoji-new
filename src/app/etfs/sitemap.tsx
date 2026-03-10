@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   etfs.forEach((etf) => {
     links.push({
-      url: `${siteUrl}/etfs/${etf.slug}`,
+      url: siteUrl + "/etfs/" + etf.slug,
       lastModified: new Date(),
       changeFrequency: "hourly",
       priority: 0.7,
