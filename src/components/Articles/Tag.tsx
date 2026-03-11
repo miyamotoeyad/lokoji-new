@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { RiHashtag } from "@remixicon/react";
 import { Entry } from "contentful";

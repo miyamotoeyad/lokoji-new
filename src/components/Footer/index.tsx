@@ -1,17 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import { useForm } from "react-hook-form";
 import {
   RiFacebookCircleFill,
   RiTwitterXFill,
   RiTelegramFill,
-  RiMailSendLine,
-  RiCheckLine,
 } from "@remixicon/react";
 import { footerLinks } from "@/lib/Menus/footerMenu";
 import { NavLinks } from "@/lib/Menus/navMenu";
 import FooterLogo from "./FooterLogo";
+import NewsletterFooter from "../Client/Newsletter/NewsletterFooter";
 
 const socials = [
   {
@@ -36,22 +32,7 @@ const socials = [
   },
 ];
 
-interface NewsletterForm {
-  email: string;
-}
-
 export default function Footer() {
-
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitSuccessful, isSubmitting, errors },
-  } = useForm<NewsletterForm>();
-
-  const onSubmit = async (data: NewsletterForm) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(data);
-  };
 
   const mainLinks = NavLinks.filter((l) => l.link && l.id !== 1);
   const marketItem = NavLinks.find((l) => l.id === 10);
@@ -140,60 +121,7 @@ export default function Footer() {
           </div>
 
           {/* ── RIGHT: NEWSLETTER ── */}
-          <div className="bg-card border border-border rounded-3xl p-8 relative overflow-hidden h-fit lg:sticky lg:top-34">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary-brand/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-brand/10 rounded-2xl flex items-center justify-center">
-                  <RiMailSendLine size={20} className="text-primary-brand" />
-                </div>
-                <div>
-                  <h2 className="text-lg m-0 font-black text-foreground">
-                    النشرة البريدية
-                  </h2>
-                  <p className="text-[10px] text-muted-foreground font-bold">
-                    أسبوعياً · مجاناً
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                سجل بريدك الإلكتروني علشان توصلك أهم تحليلات البورصة والذهب
-                أسبوعياً.
-              </p>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="أكتب بريدك الإلكتروني"
-                  {...register("email", {
-                    required: true,
-                    pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-                  })}
-                  className={`w-full bg-muted border-2 rounded-2xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-300 ${
-                    errors.email
-                      ? "border-primary-brand"
-                      : "border-transparent focus:border-primary-brand"
-                  }`}
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="cursor-pointer w-full bg-primary-brand hover:bg-primary-brand/90 disabled:opacity-50 text-white font-black py-3.5 rounded-2xl transition-all duration-200 shadow-lg shadow-primary-brand/20 active:scale-95"
-                >
-                  {isSubmitting ? "جاري التسجيل..." : "اشترك الآن"}
-                </button>
-              </form>
-
-              {isSubmitSuccessful && (
-                <div className="flex items-center justify-center gap-2 bg-green-500/10 border border-green-500/20 text-green-500 text-sm font-bold py-3 rounded-2xl">
-                  <RiCheckLine size={16} />
-                  <span>شكراً لاشتراكك! انتظرنا في بريدك قريباً ❤️</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <NewsletterFooter />
         </div>
 
         {/* ── BOTTOM BAR ── */}

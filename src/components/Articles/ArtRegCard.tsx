@@ -1,10 +1,7 @@
-"use client";
-
 import { ArticleSkeleton } from "@/types/contentfulType";
 import { Asset, AssetFile, Entry } from "contentful";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import { RiCalendar2Line, RiArrowLeftLine } from "@remixicon/react";
 
 interface ArtRegCardProps {

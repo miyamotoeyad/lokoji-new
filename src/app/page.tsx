@@ -4,7 +4,6 @@ import {
   RiFlashlightLine,
   RiArrowLeftSLine,
   RiLineChartLine,
-  RiNewspaperLine,
   RiFireLine,
   RiArticleLine,
 } from "@remixicon/react";
@@ -28,6 +27,7 @@ import {
   SectionSkeleton,
   SidebarWidgetSkeleton,
 } from "@/components/Home/Skeleton";
+import NewsletterHome from "@/components/Client/Newsletter/NewsletterHome";
 
 //  Next Dynamic
 const [CryptoSidebar, CryptoTop] = [
@@ -283,11 +283,6 @@ export default async function Home() {
                   const imgUrl = getEntryImageUrl(fields.image, 96);
                   const slug = fields.slug as string;
                   const title = fields.title as string;
-
-                  const optimizedUrl =
-                    imgUrl !== "/no-image.png"
-                      ? `${imgUrl}?w=96&h=96&fm=webp&q=75&fit=fill`
-                      : "/no-image.png";
                   return (
                     <Link
                       key={post.sys.id}
@@ -296,7 +291,7 @@ export default async function Home() {
                     >
                       <div className="w-12 h-12 rounded-2xl bg-white/10 overflow-hidden shrink-0">
                         <Image
-                          src={optimizedUrl}
+                          src={imgUrl}
                           alt={title}
                           width={48}
                           height={48}
@@ -336,28 +331,7 @@ export default async function Home() {
             <CommoditiesSection commodities={commodities} />
 
             {/* Newsletter */}
-            <div className="bg-dprimary rounded-3xl p-6 text-white text-center relative overflow-hidden space-y-4">
-              <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary-brand/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative z-10 space-y-4">
-                <div className="w-10 h-10 bg-primary-brand/20 rounded-2xl flex items-center justify-center mx-auto">
-                  <RiNewspaperLine className="text-primary-brand" size={20} />
-                </div>
-                <div>
-                  <h4 className="font-black text-base">النشرة الإخبارية</h4>
-                  <p className="text-xs text-white/50 mt-1 leading-relaxed">
-                    أهم ملخصات السوق المصري تصلك صباح كل يوم
-                  </p>
-                </div>
-                <input
-                  type="email"
-                  placeholder="بريدك الإلكتروني"
-                  className="w-full bg-white/10 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-primary-brand placeholder:text-white/30 transition-colors"
-                />
-                <button className="cursor-pointer w-full bg-primary-brand hover:bg-primary-brand/90 py-3 rounded-2xl font-black text-sm transition-colors shadow-lg shadow-primary-brand/30">
-                  اشترك الآن
-                </button>
-              </div>
-            </div>
+            <NewsletterHome />
           </aside>
         </div>
       </div>

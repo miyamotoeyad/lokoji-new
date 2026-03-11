@@ -8,7 +8,7 @@ import {
   RiArticleLine,
   RiArrowLeftLine,
 } from "@remixicon/react";
-import type { IconType } from "react-icons";
+import type { RemixiconComponentType } from "@remixicon/react";
 import Link from "next/link";
 
 interface AuthorDetailsCardProps {
@@ -136,7 +136,7 @@ function SocialLink({
   hoverColor,
 }: {
   href: string;
-  Icon: IconType;
+  Icon: RemixiconComponentType;
   hoverColor: string;
 }) {
   return (

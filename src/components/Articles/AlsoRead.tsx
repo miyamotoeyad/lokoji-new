@@ -1,4 +1,3 @@
-// components/Articles/AlsoRead.tsx
 import { Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
 import { Asset, AssetFile } from "contentful";
