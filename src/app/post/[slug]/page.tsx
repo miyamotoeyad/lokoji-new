@@ -1,16 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Articles/Header";
-import Content from "@/components/Articles/Content";
-import Share from "@/components/Articles/Share";
-import Tag from "@/components/Articles/Tag";
 import AlsoRead from "@/components/Articles/AlsoRead";
-// import GoogleNews from "@/components/Articles/GoogleNews";
 import { client } from "@/utils/contentful";
-import { TypeArticlesSkeleton, TypeAuthorsSkeleton } from "@/types";
+import { TypeArticlesSkeleton } from "@/types";
 import getArticles, { getArticle } from "@/utils/Content/getArticles";
-import { Entry } from "contentful";
-import { AuthorDetailsCard } from "@/components/Articles/AuthorDetailsCard";
 import { generateArticleMetadata } from "@/lib/MetaData/generateArticleMetadata";
 import { getJsonLdArticle, getJsonLdImage } from "@/lib/Schemas/getJsonLd";
 import InfiniteArticleFeed from "../InfiniteArticles";
@@ -39,8 +32,6 @@ export default async function ArticlePage({ params }: { params: Params }) {
   ]);
 
   if (!data) return notFound();
-
-  const isAuthorResolved = data.fields.author && "fields" in data.fields.author;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8 md:py-16" dir="rtl">

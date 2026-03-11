@@ -21,7 +21,6 @@ import { getCommodities, type CommodityItem } from "@/lib/Data/commoditiesData";
 import { getCryptoData } from "@/lib/Data/getCryptoData";
 import {
   getWorldMarketData,
-  type WorldMarketItem,
 } from "@/lib/Data/worldMarketData";
 import {
   getWorldStocksData,
@@ -34,6 +33,7 @@ import ArtSquCard from "@/components/Articles/ArtSquCard";
 import { Entry, Asset, AssetFile } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
 import getArticles from "@/utils/Content/getArticles";
+import { getEgyptianMarketData } from "@/lib/Data/egMarketData";
 
 // ── unique sectors list ───────────────────────────────────────────────────────
 const SECTORS = Array.from(new Set(WORLD_STOCKS_CONFIG.map((s) => s.sector)));
@@ -41,6 +41,7 @@ const SECTORS = Array.from(new Set(WORLD_STOCKS_CONFIG.map((s) => s.sector)));
 async function getHomeData() {
   const [
     contentfulRes,
+    egMarketData,
     exchangeRes,
     etfs,
     commodities,
@@ -49,6 +50,7 @@ async function getHomeData() {
     worldStocks,
   ] = await Promise.all([
     getArticles(),
+    getEgyptianMarketData(),
     getExchangeRates("USD"),
     getETFs(),
     getCommodities(),
@@ -82,6 +84,7 @@ async function getHomeData() {
     cryptoList: cryptoRes.data,
     worldIndices,
     worldStocks,
+    egMarketData,
   };
 }
 
@@ -115,23 +118,15 @@ function ChangePill({
   );
 }
 
-const REGION_FLAG: Record<string, string> = {
-  أمريكا: "US",
-  أوروبا: "EU",
-  آسيا: "AS",
-  "الشرق الأوسط": "MENA",
-  أفريقيا: "AF",
-  "أمريكا اللاتينية": "LA",
-};
-
 export default async function Home() {
   const {
     articles,
+    egMarketData,
     widgetPairs,
     etfs,
     commodities,
     cryptoList,
-    worldIndices,
+    // worldIndices,
     worldStocks,
   } = await getHomeData();
 
@@ -301,10 +296,10 @@ export default async function Home() {
               <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
                 <RiGlobalLine size={16} />
               </div>
-              <h2 className="text-xl font-black">المؤشرات العالمية</h2>
+              <h2 className="text-xl font-black">اليورصة المصرية</h2>
             </div>
             <Link
-              href="/world-market"
+              href="/eg-market"
               className="btn text-xs py-2 px-4 flex items-center gap-1"
             >
               كل المؤشرات <RiArrowLeftSLine size={14} />
@@ -315,25 +310,25 @@ export default async function Home() {
             {/* Scrollable indices */}
             <div className="overflow-x-auto no-scrollbar">
               <div className="flex divide-x divide-border dark:divide-white/10 min-w-max">
-                {worldIndices.slice(0, 10).map((item: WorldMarketItem) => (
+                {egMarketData.slice(0, 10).map((item) => (
                   <Link
                     key={item.id}
-                    href={`/world-market/${item.slug}`}
+                    href={`/eg-market/${item.slug}`}
                     className="group flex flex-col gap-2 px-5 py-4 hover:bg-primary-brand/5 dark:hover:bg-white/5 transition-colors min-w-35"
                   >
                     {/* Ticker + flag */}
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[9px] font-bold text-muted-foreground font-mono uppercase tracking-widest">
-                        {item.ticker.replace("^", "")}
+                        {item.code}
                       </span>
                       <span className="text-[10px]">
-                        {REGION_FLAG[item.region ?? ""] ?? "🌐"}
+                        🇪🇬
                       </span>
                     </div>
 
                     {/* Name */}
                     <p className="text-[11px] font-bold text-muted-foreground group-hover:text-foreground transition-colors truncate">
-                      {item.title}
+                      {item.titleAr}
                     </p>
 
                     {/* Price */}
@@ -342,7 +337,7 @@ export default async function Home() {
                       dir="ltr"
                     >
                       {item.price.toLocaleString("en-US", {
-                        maximumFractionDigits: 0,
+                        maximumFractionDigits: 2,
                       })}
                     </p>
 
@@ -350,12 +345,12 @@ export default async function Home() {
                     <div className="flex text-right gap-1.5" dir="rtl">
                       <span
                         className={`text-[10px] font-black ${
-                          item.positive
+                          item.changePercent >= 0
                             ? "text-green-500 dark:text-green-400"
                             : "text-destructive dark:text-red-400"
                         }`}
                       >
-                        {item.positive ? "▲" : "▼"}{" "}
+                        {item.changePercent >= 0 ? "▲" : "▼"}{" "}
                         {Math.abs(item.changePercent).toFixed(2)}%
                       </span>
                     </div>
@@ -364,7 +359,7 @@ export default async function Home() {
                     <div className="h-0.5 rounded-full bg-border dark:bg-white/10 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          item.positive
+                          item.changePercent >= 0
                             ? "bg-green-500 dark:bg-green-400"
                             : "bg-destructive dark:bg-red-400"
                         }`}

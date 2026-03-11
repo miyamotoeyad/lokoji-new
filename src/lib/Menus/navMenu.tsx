@@ -94,7 +94,7 @@ export const NavLinks: NavLink[] = [
     title: "احنا مين؟",
     link: "/about",
     id: 6,
-    priority: 0.6,
+    priority: 0.5,
     freq: "monthly",
   },
   {
