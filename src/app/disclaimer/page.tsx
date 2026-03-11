@@ -4,7 +4,7 @@ import {
   RiShieldCheckLine,
   RiAlertLine,
   RiScalesLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";

@@ -5,7 +5,7 @@ import {
   RiCheckLine,
   RiQuestionLine,
   RiLightbulbLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 const description =
   "أهلاً بكم في لوكوجي، أول منصة اقتصادية قومية متخصصة في تحليل الأسواق المصرية والعالمية برؤية مصرية خالصة.";

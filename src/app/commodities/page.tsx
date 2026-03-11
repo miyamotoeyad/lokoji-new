@@ -8,7 +8,7 @@ import {
   RiRefreshLine,
   RiGasStationLine,
   RiGovernmentLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { getCommodities, type CommodityItem } from "@/lib/Data/commoditiesData";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { petrolUpdate } from "@/lib/Array/EgyptPetrolList";

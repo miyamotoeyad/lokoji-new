@@ -8,7 +8,7 @@ import {
   RiTelegramFill,
   RiMailSendLine,
   RiCheckLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { footerLinks } from "@/lib/Menus/footerMenu";
 import { NavLinks } from "@/lib/Menus/navMenu";
 import FooterLogo from "./FooterLogo";

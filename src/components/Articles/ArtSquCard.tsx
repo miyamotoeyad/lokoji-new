@@ -1,8 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { RiCalendar2Line, RiArrowLeftUpLine } from "react-icons/ri";
+import { RiCalendar2Line, RiArrowLeftUpLine } from "@remixicon/react";
 import { Entry, Asset, AssetFile } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
 

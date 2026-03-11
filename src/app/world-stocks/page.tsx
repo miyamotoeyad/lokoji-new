@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import {
   RiFlashlightLine,
   RiBuildingLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { getWorldStocksData } from "@/lib/Data/worldStocksData";
 import { WORLD_STOCKS_CONFIG } from "@/lib/Array/WorldCompanyList";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";

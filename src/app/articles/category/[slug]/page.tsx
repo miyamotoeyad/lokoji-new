@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Entry } from "contentful";
-import { RiPriceTag3Line } from "react-icons/ri";
+import { RiPriceTag3Line } from "@remixicon/react";
 import Link from "next/link";
 
 import { CatMenu } from "@/lib/Menus/categoryMenu";

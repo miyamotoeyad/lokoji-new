@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RiHashtag } from "react-icons/ri";
+import { RiHashtag } from "@remixicon/react";
 import { Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
 

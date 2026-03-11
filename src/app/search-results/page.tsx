@@ -8,7 +8,7 @@ import {
   RiOilLine,
   RiArrowUpSFill,
   RiArrowDownSFill,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 import { client } from "@/utils/contentful";
 import { getExchangeRates } from "@/lib/Data/exchangeData";

@@ -6,7 +6,7 @@ import {
   RiTimeLine,
   RiCalendarCheckLine,
   RiRefreshLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { Entry, Asset } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
 import { Document, Text, Block, Inline } from "@contentful/rich-text-types";

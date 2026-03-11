@@ -1,4 +1,4 @@
-import { RiSearch2Line, RiQuestionLine } from "react-icons/ri";
+import { RiSearch2Line, RiQuestionLine } from "@remixicon/react";
 
 export default function SearchNotFound() {
   return (

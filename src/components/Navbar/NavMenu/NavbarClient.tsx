@@ -7,7 +7,7 @@ import {
   RiMoonLine,
   RiSearch2Line,
   RiSunLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import SearchBox from "./SearchBox";
 import NavList from "./NavList";
 import MarketTickerBar from "./MarketTickerBar";

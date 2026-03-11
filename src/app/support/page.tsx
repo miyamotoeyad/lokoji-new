@@ -9,7 +9,7 @@ import {
   RiArrowLeftLine,
   RiSmartphoneLine,
   RiBankCardLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 export const metadata: Metadata = generateStaticMetadata({
   title: "ادعم لوكوجي",

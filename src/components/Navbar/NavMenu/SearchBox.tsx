@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { RiCloseLine, RiSearchLine, RiFireLine } from "react-icons/ri";
+import { RiCloseLine, RiSearchLine, RiFireLine } from "@remixicon/react";
 
 type SearchProps = {
   btn: boolean;

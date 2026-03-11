@@ -1,6 +1,6 @@
 import { WorldStock } from "@/lib/Data/worldStocksData";
 import Link from "next/link";
-import { RiArrowDownSFill, RiArrowUpSFill } from "react-icons/ri";
+import { RiArrowDownSFill, RiArrowUpSFill } from "@remixicon/react";
 
 export default function WorldStockCard({
   stock,

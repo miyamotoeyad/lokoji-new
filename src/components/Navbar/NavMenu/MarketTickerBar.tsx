@@ -1,6 +1,6 @@
 "use client";
 
-import { RiRadioButtonLine } from "react-icons/ri";
+import { RiRadioButtonLine } from "@remixicon/react";
 import type { TickerItem } from "@/lib/Data/tickerData";
 
 interface Props {

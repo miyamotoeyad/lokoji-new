@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RiHome4Line, RiSearchLine, RiArrowLeftLine } from "react-icons/ri";
+import { RiHome4Line, RiSearchLine, RiArrowLeftLine } from "@remixicon/react";
 
 export default function NotFound() {
   return (

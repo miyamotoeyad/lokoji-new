@@ -18,7 +18,7 @@ import {
   RiTwitterXFill,
   RiWhatsappLine,
   RiShareForwardLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 import { cn } from "@/lib/utils";
 

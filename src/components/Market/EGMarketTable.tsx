@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { RiArrowUpSFill, RiArrowDownSFill, RiSearchLine } from "react-icons/ri";
+import { RiArrowUpSFill, RiArrowDownSFill, RiSearchLine } from "@remixicon/react";
 import type { EGStock } from "@/lib/Data/egMarketData";
 
 export default function EGMarketTable({ stocks }: { stocks: EGStock[] }) {

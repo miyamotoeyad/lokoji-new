@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RiArrowRightSLine, RiArrowLeftSLine } from "react-icons/ri";
+import { RiArrowRightSLine, RiArrowLeftSLine } from "@remixicon/react";
 
 interface Props {
   currentPage: number;

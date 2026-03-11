@@ -8,7 +8,7 @@ import {
   RiArrowUpSFill,
   RiArrowDownSFill,
   RiSearchLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { CurrencyInput } from "./CurrencyInput";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { toEGP, toUSD } from "@/lib/Data/exchangeData";

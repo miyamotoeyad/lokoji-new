@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { RiArrowLeftUpLine } from "react-icons/ri";
+import { RiArrowLeftUpLine } from "@remixicon/react";
 
 const CATEGORIES = [
   "الكل",

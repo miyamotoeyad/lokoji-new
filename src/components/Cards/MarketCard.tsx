@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RiArrowUpSFill, RiArrowDownSFill } from "react-icons/ri";
+import { RiArrowUpSFill, RiArrowDownSFill } from "@remixicon/react";
 
 interface MarketProps {
   title: string;

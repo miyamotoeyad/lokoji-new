@@ -5,7 +5,7 @@ import { Asset, AssetFile, Entry } from "contentful";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { RiCalendar2Line, RiArrowLeftLine } from "react-icons/ri";
+import { RiCalendar2Line, RiArrowLeftLine } from "@remixicon/react";
 
 interface ArtRegCardProps {
   article: Entry<ArticleSkeleton, undefined, string>;

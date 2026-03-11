@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { RiCloseLine, RiShieldCheckLine } from "react-icons/ri";
+import { RiCloseLine, RiShieldCheckLine } from "@remixicon/react";
 import { CookieIcon } from "lucide-react";
 
 const CookieBanner: React.FC = () => {

@@ -7,7 +7,7 @@ import {
   RiPieChartLine,
   RiArrowLeftSLine,
   RiBitCoinLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import CryptoChart from "@/components/Charts/CryptoChart";
 import Link from "next/link";
 import { CryptoParams, generateCryptoMetadata } from "@/lib/MetaData/generateCryptoMetadata";

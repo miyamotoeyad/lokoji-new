@@ -7,7 +7,7 @@ import {
   RiLinkedinFill,
   RiArticleLine,
   RiArrowLeftLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import type { IconType } from "react-icons";
 import Link from "next/link";
 

@@ -9,7 +9,7 @@ import {
   RiFlashlightLine,
   RiBarChartLine,
   RiArrowLeftSLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { getETFs, type ETFItem } from "@/lib/Data/etfData";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 

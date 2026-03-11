@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { RiArchiveLine } from "react-icons/ri";
+import { RiArchiveLine } from "@remixicon/react";
 import { CatMenu } from "@/lib/Menus/categoryMenu";
 import ArtSquCard from "@/components/Articles/ArtSquCard";
 import { getArticlesPaginated } from "@/utils/Content/getArticles"; // ← remove getArticles

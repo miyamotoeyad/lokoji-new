@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RiArrowUpLine } from "react-icons/ri";
+import { RiArrowUpLine } from "@remixicon/react";
 
 export default function ScrollButton() {
   const [visible, setVisible] = useState(false);

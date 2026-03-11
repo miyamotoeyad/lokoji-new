@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { RiCalendar2Line, RiArrowLeftSLine } from "react-icons/ri";
+import { RiCalendar2Line, RiArrowLeftSLine } from "@remixicon/react";
 import { Entry } from "contentful";
 import { Asset, AssetFile } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";

@@ -4,7 +4,7 @@ import {
   RiArrowUpSFill,
   RiArrowDownSFill,
   RiExternalLinkLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 export interface CryptoData {
   id: number;

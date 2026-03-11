@@ -6,7 +6,7 @@ import {
   RiSendPlaneFill,
   RiCheckboxCircleFill,
   RiErrorWarningLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { cn } from "@/lib/utils";
 
 interface ContactFormData {

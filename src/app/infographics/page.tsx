@@ -4,7 +4,7 @@ import {
   RiBarChartBoxLine,
   RiPieChartLine,
   RiNewspaperLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { Asset, AssetFile } from "contentful";
 import {
   getInfographics,

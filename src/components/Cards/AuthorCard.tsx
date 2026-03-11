@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Asset, Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
-import { RiArrowLeftSLine, RiTimeLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiTimeLine } from "@remixicon/react";
 
 interface AuthorCardProps {
   news: Entry<TypeArticlesSkeleton, undefined, string>;

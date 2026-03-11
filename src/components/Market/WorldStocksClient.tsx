@@ -7,7 +7,7 @@ import {
   RiArrowDownSFill,
   RiSearchLine,
   RiCloseLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { type WorldStock } from "@/lib/Data/worldStocksData";
 
 const formatter = new Intl.NumberFormat("en", {

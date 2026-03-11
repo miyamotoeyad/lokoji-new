@@ -8,7 +8,7 @@ import {
   RiSettings4Line,
   RiFileLockLine,
   RiParentLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 const description = "اقرأ عن سياسة الخصوصية الخاصة بموقع لوكوجي لتطمئن على كيفية حماية بياناتك الشخصية.";
 const siteUrl = process.env.NEXT_PUBLIC_DOMAIN_URL;

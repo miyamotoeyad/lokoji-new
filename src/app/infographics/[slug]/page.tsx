@@ -9,7 +9,7 @@ import {
   RiArrowRightSLine,
   RiBarChartBoxLine,
   RiDownloadLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import {
   getInfographic,
   getInfographicSlugs,

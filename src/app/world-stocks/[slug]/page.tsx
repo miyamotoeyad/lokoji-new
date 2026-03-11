@@ -9,7 +9,7 @@ import {
   RiPieChartLine,
   RiStackLine,
   RiBuildingLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 import {
   getWorldStocksData,

@@ -1,6 +1,6 @@
 "use client";
 
-import { RiCloseLine, RiArrowLeftSLine, RiArrowDownSLine } from "react-icons/ri";
+import { RiCloseLine, RiArrowLeftSLine, RiArrowDownSLine } from "@remixicon/react";
 import { NavLinks } from "@/lib/Menus/navMenu";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

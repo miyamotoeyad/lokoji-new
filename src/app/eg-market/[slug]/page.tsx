@@ -6,7 +6,7 @@ import {
   RiNewspaperLine,
   RiArrowLeftSLine,
   RiRefreshLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { getEgyptianMarketData, type EGStock } from "@/lib/Data/egMarketData";
 import { getIntradayCandles, type CandlePoint } from "@/lib/Data/chartData";
 import { notFound } from "next/navigation";

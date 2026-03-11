@@ -8,7 +8,7 @@ import {
   RiCopyrightLine,
   RiUserForbidLine,
   RiExternalLinkLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 const title = "شروط الاستخدام";
 

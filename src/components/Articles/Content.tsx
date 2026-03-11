@@ -10,7 +10,7 @@ import {
 } from "@contentful/rich-text-types";
 import Image from "next/image";
 import { ReactNode } from "react";
-import { RiDoubleQuotesR } from "react-icons/ri";
+import { RiDoubleQuotesR } from "@remixicon/react";
 import { Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
 import { Asset, AssetFile } from "contentful";

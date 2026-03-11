@@ -6,7 +6,7 @@ import { TypeArticlesSkeleton } from "@/types";
 import { getNextArticles } from "@/actions/articleActions";
 import ArticleUnit from "@/components/Articles/ArticleUnit";
 import Link from "next/link";
-import { RiArrowLeftLine } from "react-icons/ri";
+import { RiArrowLeftLine } from "@remixicon/react";
 
 interface Props {
   initial: Entry<TypeArticlesSkeleton, undefined, string>;

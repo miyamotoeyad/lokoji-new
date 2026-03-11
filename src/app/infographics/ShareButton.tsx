@@ -1,6 +1,6 @@
 "use client";
 
-import { RiShareLine } from "react-icons/ri";
+import { RiShareLine } from "@remixicon/react";
 
 export default function ShareButton({ title }: { title: string }) {
   return (

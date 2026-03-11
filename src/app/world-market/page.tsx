@@ -6,7 +6,7 @@ import {
   RiGlobalLine,
   RiFlashlightLine,
   RiBarChartGroupedLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import {
   getWorldMarketData,
   type WorldMarketItem,

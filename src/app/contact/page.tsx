@@ -7,7 +7,7 @@ import {
   RiWhatsappLine,
   RiTelegramFill,
   RiChatSmile2Line,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 
 const title = "تواصل معنا | فريق لوكوجي الاقتصادي";

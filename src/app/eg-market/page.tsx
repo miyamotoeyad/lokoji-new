@@ -5,7 +5,7 @@ import {
   RiExternalLinkLine,
   RiRefreshLine,
   RiFlashlightLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import Link from "next/link";
 import { getEgyptianMarketData, type EGStock } from "@/lib/Data/egMarketData";
 import EGMarketTable from "@/components/Market/EGMarketTable";

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { RiArrowLeftLine } from "react-icons/ri";
+import { RiArrowLeftLine } from "@remixicon/react";
 
 export default function GoogleNews() {
   return (

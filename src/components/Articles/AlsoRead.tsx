@@ -2,7 +2,7 @@
 import { Entry } from "contentful";
 import { TypeArticlesSkeleton } from "@/types";
 import { Asset, AssetFile } from "contentful";
-import { RiBellLine } from "react-icons/ri";
+import { RiBellLine } from "@remixicon/react";
 import AlsoReadClient, { RelatedArticleData } from "@/app/post/AlsoReadClient";
 
 interface AlsoReadProps {

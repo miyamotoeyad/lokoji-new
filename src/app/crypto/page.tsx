@@ -5,7 +5,7 @@ import {
   RiFlashlightLine,
   RiFundsLine,
   RiBitCoinLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import { CryptoCard } from "@/components/Cards";
 import { Metadata } from "next";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";

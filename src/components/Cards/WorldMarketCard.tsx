@@ -1,6 +1,6 @@
 import { WorldMarketItem } from "@/lib/Data/worldMarketData";
 import Link from "next/link";
-import { RiArrowDownSFill, RiArrowUpSFill } from "react-icons/ri";
+import { RiArrowDownSFill, RiArrowUpSFill } from "@remixicon/react";
 
 export default function WorldMarketCard({ item }: { item: WorldMarketItem }) {
   const color = item.positive ? "#22c55e" : "var(--color-destructive)";

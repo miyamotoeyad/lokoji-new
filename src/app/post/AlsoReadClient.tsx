@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { RiCalendar2Line, RiArrowLeftSLine } from "react-icons/ri";
+import { RiCalendar2Line, RiArrowLeftSLine } from "@remixicon/react";
 
 export interface RelatedArticleData {
   id: string;

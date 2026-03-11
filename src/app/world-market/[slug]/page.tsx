@@ -6,7 +6,7 @@ import {
   RiArrowLeftSLine,
   RiLineChartLine, RiPieChartLine,
   RiStackLine, RiGlobalLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 
 import { getWorldMarketData, type WorldMarketItem } from "@/lib/Data/worldMarketData";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";

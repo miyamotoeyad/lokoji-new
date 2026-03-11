@@ -7,7 +7,7 @@ import {
   RiInformationLine,
   RiRefreshLine,
   RiArrowLeftSLine,
-} from "react-icons/ri";
+} from "@remixicon/react";
 import Link from "next/link";
 import { getETFs, type ETFItem } from "@/lib/Data/etfData";
 import ETFChart from "@/components/Charts/ETFChart";
