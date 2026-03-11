@@ -12,9 +12,9 @@ import {
 import { CurrencyInput } from "./CurrencyInput";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
 import { toEGP, toUSD } from "@/lib/Data/exchangeData";
+import { getCurrencyNameAr } from "@/lib/translateToArabic";
 
 export default function ExchangeClient() {
-  // ✅ stableChanges now comes from the hook — no useEffect needed here
   const { rates, stableChanges, loading, error, lastUpdate, convert, refresh } =
     useExchangeRates();
 
@@ -23,7 +23,6 @@ export default function ExchangeClient() {
   const [currency2, setCurrency2] = useState("EGP");
   const [tableSearch, setTableSearch] = useState("");
 
-  // ✅ Derived — no state, no effect, no cascading renders
   const amount2 = useMemo(() => {
     if (!rates[currency1] || !rates[currency2]) return "...";
     return convert(parseFloat(String(amount1)) || 0, currency1, currency2);
@@ -44,37 +43,38 @@ export default function ExchangeClient() {
       currencies
         .map((c) => ({
           code: c,
+          nameAr: getCurrencyNameAr(c),
           rate: toEGP(c, rates),
           rateUSD: toUSD(c, rates),
           change: stableChanges[c] ?? 0,
         }))
-        .filter((row) =>
-          row.code.toLowerCase().includes(tableSearch.toLowerCase()),
+        .filter(
+          (row) =>
+            row.code.toLowerCase().includes(tableSearch.toLowerCase()) ||
+            row.nameAr.includes(tableSearch),
         ),
     [rates, tableSearch, stableChanges, currencies],
   );
 
   function handleAmount1Change(v: string) {
-    setAmount1(v); // ✅ amount2 auto-derives
+    setAmount1(v);
   }
 
   function handleAmount2Change(v: string) {
-    // ✅ reverse convert into amount1
     setAmount1(convert(parseFloat(v) || 0, currency2, currency1));
   }
 
   function handleCurrency1Change(c: string) {
-    setCurrency1(c); // ✅ amount2 auto-derives
+    setCurrency1(c);
   }
 
   function handleCurrency2Change(c: string) {
-    setCurrency2(c); // ✅ amount2 auto-derives
+    setCurrency2(c);
   }
 
   function swap() {
     setCurrency1(currency2);
     setCurrency2(currency1);
-    // ✅ amount2 auto-derives from new currencies
   }
 
   return (
@@ -110,6 +110,9 @@ export default function ExchangeClient() {
               1 {currency1} <span className="text-primary-brand">=</span> {rate}{" "}
               {currency2}
             </p>
+            <p className="text-[10px] text-muted-foreground font-bold" dir="rtl">
+              {getCurrencyNameAr(currency1)} مقابل {getCurrencyNameAr(currency2)}
+            </p>
           </div>
         )}
       </div>
@@ -130,7 +133,7 @@ export default function ExchangeClient() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex lg:flex-row items-center justify-between gap-4 w-full flex-col ">
+            <div className="flex lg:flex-row items-center justify-between gap-4 w-full flex-col">
               <CurrencyInput
                 label="من"
                 amount={amount1}
@@ -168,13 +171,19 @@ export default function ExchangeClient() {
                 <RiRefreshLine size={11} />
                 {lastUpdate && `آخر تحديث: ${lastUpdate}`}
               </button>
+
               {rate && (
-                <span
-                  className="text-xs font-black text-muted-foreground bg-muted px-3 py-1.5 rounded-full"
-                  dir="ltr"
-                >
-                  1 {currency1} = {rate} {currency2}
-                </span>
+                <div className="flex flex-col items-end gap-0.5">
+                  <span
+                    className="text-xs font-black text-muted-foreground bg-muted px-3 py-1.5 rounded-full"
+                    dir="ltr"
+                  >
+                    1 {currency1} = {rate} {currency2}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-bold" dir="rtl">
+                    {getCurrencyNameAr(currency1)} مقابل {getCurrencyNameAr(currency2)}
+                  </span>
+                </div>
               )}
             </div>
           </div>
@@ -195,10 +204,7 @@ export default function ExchangeClient() {
               </span>
             </div>
             <div className="flex items-center overflow-hidden gap-3 bg-muted border-2 border-transparent focus-within:border-primary-brand focus-within:bg-card rounded-2xl px-4 py-2.5 w-full md:w-64 transition-all duration-300">
-              <RiSearchLine
-                size={16}
-                className="text-muted-foreground shrink-0"
-              />
+              <RiSearchLine size={16} className="text-muted-foreground shrink-0" />
               <input
                 type="text"
                 placeholder="ابحث عن عملة..."
@@ -210,6 +216,7 @@ export default function ExchangeClient() {
           </div>
 
           <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            {/* Table Header */}
             <div className="flex items-center px-6 py-4 border-b border-border bg-muted/50 gap-4">
               <span className="w-8 text-[11px] font-black text-muted-foreground uppercase tracking-widest shrink-0">
                 #
@@ -224,6 +231,8 @@ export default function ExchangeClient() {
                 بالجنيه
               </span>
             </div>
+
+            {/* Table Rows */}
             <div className="divide-y divide-border">
               {tableData.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground text-sm font-bold">
@@ -251,22 +260,30 @@ export default function ExchangeClient() {
                       <span className="w-8 text-xs font-black text-muted-foreground tabular-nums shrink-0">
                         {i + 1}
                       </span>
+
+                      {/* Currency name + Arabic */}
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="w-9 h-9 rounded-xl bg-primary-brand/10 flex items-center justify-center font-black text-primary-brand text-xs shrink-0">
                           {row.code[0]}
                         </div>
-                        <span className="font-black text-sm text-foreground group-hover:text-primary-brand transition-colors">
-                          {row.code}
-                        </span>
+                        <div className="min-w-0">
+                          <span className="font-black text-sm text-foreground group-hover:text-primary-brand transition-colors block">
+                            {row.code}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-bold block truncate">
+                            {row.nameAr}
+                          </span>
+                        </div>
                       </div>
-                      <div
-                        className="w-32 text-center hidden md:block shrink-0"
-                        dir="ltr"
-                      >
+
+                      {/* USD rate */}
+                      <div className="w-32 text-center hidden md:block shrink-0" dir="ltr">
                         <span className="text-xs font-bold text-muted-foreground tabular-nums">
                           ${row.rateUSD}
                         </span>
                       </div>
+
+                      {/* EGP rate + change badge */}
                       <div className="w-36 flex items-center justify-end gap-2 shrink-0">
                         <span
                           className="text-sm font-black text-foreground tabular-nums"
@@ -294,6 +311,7 @@ export default function ExchangeClient() {
               )}
             </div>
           </div>
+
           <p className="text-[10px] text-muted-foreground font-bold text-center">
             الأسعار تقريبية · open.er-api.com · {lastUpdate}
           </p>
