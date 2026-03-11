@@ -13,12 +13,8 @@ import { getExchangeRates } from "@/lib/Data/exchangeData";
 import { getETFs } from "@/lib/Data/etfData";
 import { getCommodities } from "@/lib/Data/commoditiesData";
 import { getCryptoData } from "@/lib/Data/getCryptoData";
-import {
-  getWorldMarketData,
-} from "@/lib/Data/worldMarketData";
-import {
-  getWorldStocksData,
-} from "@/lib/Data/worldStocksData";
+import { getWorldMarketData } from "@/lib/Data/worldMarketData";
+import { getWorldStocksData } from "@/lib/Data/worldStocksData";
 import { WORLD_STOCKS_CONFIG } from "@/lib/Array/WorldCompanyList";
 
 import ArtSquCard from "@/components/Articles/ArtSquCard";
@@ -27,17 +23,56 @@ import { ArticleSkeleton } from "@/types/contentfulType";
 import getArticles from "@/utils/Content/getArticles";
 import { getEgyptianMarketData } from "@/lib/Data/egMarketData";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
+import {
+  SectionSkeleton,
+  SidebarWidgetSkeleton,
+} from "@/components/Home/Skeleton";
 
 //  Next Dynamic
-const [ CryptoSidebar, CryptoTop ] = [
-  dynamic(() => import('@/components/Home/CryptoSection').then(mod => mod.CryptoSidebar)),
-  dynamic(() => import('@/components/Home/CryptoSection').then(mod => mod.CryptoTop)),
+const [CryptoSidebar, CryptoTop] = [
+  dynamic(
+    () =>
+      import("@/components/Home/CryptoSection").then(
+        (mod) => mod.CryptoSidebar,
+      ),
+    {
+      loading: () => <SidebarWidgetSkeleton />,
+    },
+  ),
+  dynamic(
+    () =>
+      import("@/components/Home/CryptoSection").then((mod) => mod.CryptoTop),
+    {
+      loading: () => <SectionSkeleton height="h-48" />,
+    },
+  ),
 ];
-const EgyMarketIndicesSection = dynamic(() => import('@/components/Home/EgyMarketIndicesSection'));
-const WorldMarketIndicesSection = dynamic(() => import('@/components/Home/WorldMarketIndicesSection'));
-const ETFSection = dynamic(() => import('@/components/Home/ETFSection'));
-const CommoditiesSection = dynamic(() => import('@/components/Home/CommoditiesSection'));
+
+const EgyMarketIndicesSection = dynamic(
+  () => import("@/components/Home/EgyMarketIndicesSection"),
+  {
+    loading: () => <SectionSkeleton height="h-32" />,
+  },
+);
+
+const WorldMarketIndicesSection = dynamic(
+  () => import("@/components/Home/WorldMarketIndicesSection"),
+  {
+    loading: () => <SectionSkeleton height="h-16" rows={4} />,
+  },
+);
+
+const ETFSection = dynamic(() => import("@/components/Home/ETFSection"), {
+  loading: () => <SidebarWidgetSkeleton />,
+});
+
+const CommoditiesSection = dynamic(
+  () => import("@/components/Home/CommoditiesSection"),
+  {
+    loading: () => <SidebarWidgetSkeleton />,
+  },
+);
 
 // ── unique sectors list ───────────────────────────────────────────────────────
 const SECTORS = Array.from(new Set(WORLD_STOCKS_CONFIG.map((s) => s.sector)));
@@ -92,10 +127,11 @@ async function getHomeData() {
   };
 }
 
-function getEntryImageUrl(image: unknown): string {
+function getEntryImageUrl(image: unknown, width = 800): string {
   const asset = image as Asset;
   const file = asset?.fields?.file as AssetFile | undefined;
-  return file?.url ? `https:${file.url}` : "/no-image.png";
+  if (!file?.url) return "/no-image.png";
+  return `https:${file.url}?w=${width}&fm=webp&q=75&fit=fill`;
 }
 
 export default async function Home() {
@@ -205,11 +241,11 @@ export default async function Home() {
           ))}
         </div>
 
-        <CryptoTop cryptoTop={cryptoTop}/>
+        <CryptoTop cryptoTop={cryptoTop} />
 
-        <EgyMarketIndicesSection egMarketData={egMarketData}/>
+        <EgyMarketIndicesSection egMarketData={egMarketData} />
 
-        <WorldMarketIndicesSection stocksBySector={stocksBySector}/>
+        <WorldMarketIndicesSection stocksBySector={stocksBySector} />
 
         {/* ══ 6. MAIN CONTENT + SIDEBAR ══════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -244,9 +280,14 @@ export default async function Home() {
               <div className="relative z-10 space-y-2">
                 {articles.slice(10, 14).map((post) => {
                   const fields = post.fields as Record<string, unknown>;
-                  const imgUrl = getEntryImageUrl(fields.image);
+                  const imgUrl = getEntryImageUrl(fields.image, 96);
                   const slug = fields.slug as string;
                   const title = fields.title as string;
+
+                  const optimizedUrl =
+                    imgUrl !== "/no-image.png"
+                      ? `${imgUrl}?w=96&h=96&fm=webp&q=75&fit=fill`
+                      : "/no-image.png";
                   return (
                     <Link
                       key={post.sys.id}
@@ -255,10 +296,11 @@ export default async function Home() {
                     >
                       <div className="w-12 h-12 rounded-2xl bg-white/10 overflow-hidden shrink-0">
                         <Image
-                          src={imgUrl}
+                          src={optimizedUrl}
                           alt={title}
                           width={48}
                           height={48}
+                          sizes="48px"
                           className="object-cover h-full w-full"
                         />
                       </div>
@@ -285,13 +327,13 @@ export default async function Home() {
           {/* ── Sidebar ── */}
           <aside className="lg:col-span-4 lg:sticky lg:top-34 space-y-6">
             {/* Crypto widget */}
-            <CryptoSidebar cryptoSidebar={cryptoSidebar}/>
+            <CryptoSidebar cryptoSidebar={cryptoSidebar} />
 
             {/* ETF widget */}
-            <ETFSection etfs={etfs}/>
+            <ETFSection etfs={etfs} />
 
             {/* Commodities widget */}
-            <CommoditiesSection commodities={commodities}/>
+            <CommoditiesSection commodities={commodities} />
 
             {/* Newsletter */}
             <div className="bg-dprimary rounded-3xl p-6 text-white text-center relative overflow-hidden space-y-4">
