@@ -1,10 +1,10 @@
 export const EGY_FUEL_PRICES_EGP = {
-  petrol80: 15.75,
-  petrol92: 19.75,
-  petrol95: 21.75,
-  kerosene: 17.5,
-  solar: 15.75,
-  gasStove: 100.0,
+  petrol80: 20.75,
+  petrol92: 22.25,
+  petrol95: 24,
+  kerosene: 20.50,
+  solar: 20.5,
+  gasStove: 275.00,
   diesel: 13.50,
 } as const;
 
