@@ -18,8 +18,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Get first image from the images array
     const file = images?.[0]?.fields?.file as AssetFile | undefined;
     const imageUrl = file?.url
-      ? `https:${file.url}?w=600&fm=webp&q=75&fit=fill`
-      : null;
+  ? `https:${file.url}?w=600&amp;fm=webp&amp;q=75&amp;fit=fill`
+  : null;
 
     return {
       url: siteUrl + "/infographics/" + slug,
