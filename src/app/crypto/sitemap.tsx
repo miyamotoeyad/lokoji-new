@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [cryptoRes] = await Promise.all([getCryptoData()]);
   const links: MetadataRoute.Sitemap = [];
 
-  cryptoRes.data.forEach(({ slug }) => {
+  cryptoRes.forEach(({ slug }) => {
     links.push({
       url: siteUrl+ "/crypto/" + slug,
       lastModified: new Date(),
