@@ -1072,6 +1072,15 @@ export const WORLD_STOCKS_CONFIG = [
     exchange: "NASDAQ",
   },
   {
+    id: 145,
+    ticker: "SCATC.OL",
+    slug: "Scatec",
+    nameAr: "سكاتيك",
+    nameEn: "Scatec ASA",
+    sector: "طاقة متجددة",
+    exchange: "NASDAQ",
+  },
+  {
     id: 116,
     ticker: "PLUG",
     slug: "plugpower",

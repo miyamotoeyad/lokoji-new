@@ -92,7 +92,7 @@ export async function getStockCandles(
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=5m&range=1d`;
     const res = await fetch(url, {
-      next: { revalidate: 300 },
+      next: { revalidate: 600 },
       headers: { "User-Agent": "Mozilla/5.0" },
     });
     if (!res.ok) return [];

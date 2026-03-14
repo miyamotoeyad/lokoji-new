@@ -1,13 +1,11 @@
 import { Metadata } from "next";
-import {
-  RiFlashlightLine,
-  RiBuildingLine,
-} from "@remixicon/react";
+import { RiFlashlightLine, RiBuildingLine } from "@remixicon/react";
 import { getWorldStocksData } from "@/lib/Data/worldStocksData";
 import { WORLD_STOCKS_CONFIG } from "@/lib/Array/WorldCompanyList";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import WorldStocksClient from "@/components/Market/WorldStocksClient";
 import WorldStockCard from "@/components/Cards/WorldStockCard";
+import { Suspense } from "react";
 
 export const metadata: Metadata = generateStaticMetadata({
   title: "أسهم الشركات العالمية",
@@ -16,7 +14,7 @@ export const metadata: Metadata = generateStaticMetadata({
   url: "/world-stocks",
 });
 
-export const revalidate = 300;
+export const revalidate = 1800;
 
 const SECTORS = [
   "الكل",
@@ -25,7 +23,9 @@ const SECTORS = [
 
 export default async function WorldStocksPage() {
   const stocks = await getWorldStocksData();
-  const featured = stocks.slice(0, 6);
+  const featured = [...stocks]
+    .sort((a, b) => b.changePercent - a.changePercent)
+    .slice(0, 6);
 
   return (
     <main
@@ -85,7 +85,11 @@ export default async function WorldStocksPage() {
             </h2>
           </div>
         </div>
-        <WorldStocksClient stocks={stocks} sectors={SECTORS} />
+        <Suspense
+          fallback={<div className="h-96 bg-muted rounded-3xl animate-pulse" />}
+        >
+          <WorldStocksClient stocks={stocks} sectors={SECTORS} />
+        </Suspense>
       </section>
     </main>
   );

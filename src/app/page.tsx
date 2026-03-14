@@ -8,19 +8,13 @@ import {
   RiArticleLine,
 } from "@remixicon/react";
 
-import { getExchangeRates } from "@/lib/Data/exchangeData";
-import { getETFs } from "@/lib/Data/etfData";
-import { getCommodities } from "@/lib/Data/commoditiesData";
-import { getCryptoData } from "@/lib/Data/getCryptoData";
-import { getWorldMarketData } from "@/lib/Data/worldMarketData";
-import { getWorldStocksData } from "@/lib/Data/worldStocksData";
+import { getServerData } from "@/lib/Data/serverData";
+
 import { WORLD_STOCKS_CONFIG } from "@/lib/Array/WorldCompanyList";
 
 import ArtSquCard from "@/components/Articles/ArtSquCard";
 import { Entry, Asset, AssetFile } from "contentful";
 import { ArticleSkeleton } from "@/types/contentfulType";
-import getArticles from "@/utils/Content/getArticles";
-import { getEgyptianMarketData } from "@/lib/Data/egMarketData";
 
 import dynamic from "next/dynamic";
 import {
@@ -78,52 +72,44 @@ const CommoditiesSection = dynamic(
 const SECTORS = Array.from(new Set(WORLD_STOCKS_CONFIG.map((s) => s.sector)));
 
 async function getHomeData() {
-  const [
-    contentfulRes,
-    egMarketData,
-    exchangeRes,
-    etfs,
-    commodities,
-    cryptoRes,
-    worldIndices,
-    worldStocks,
-  ] = await Promise.all([
-    getArticles(),
-    getEgyptianMarketData(),
-    getExchangeRates("USD"),
-    getETFs(),
-    getCommodities(),
-    getCryptoData(),
-    getWorldMarketData(),
-    getWorldStocksData(),
-  ]);
 
-  const egp = exchangeRes.rates["EGP"] ?? 1;
+  const {
+    article,
+    exchange,
+    crypto,
+    commodities,
+    etf,
+    egMarket,
+    worldMarket,
+    worldStocks,
+  } = await getServerData();
+
+  const egp = exchange.rates["EGP"] ?? 1;
   const widgetPairs = [
     { slug: "usd-egp", first: "USD", second: "EGP", num: egp.toFixed(2) },
     {
       slug: "eur-egp",
       first: "EUR",
       second: "EGP",
-      num: (egp / exchangeRes.rates["EUR"]).toFixed(2),
+      num: (egp / exchange.rates["EUR"]).toFixed(2),
     },
     {
       slug: "gbp-egp",
       first: "GBP",
       second: "EGP",
-      num: (egp / exchangeRes.rates["GBP"]).toFixed(2),
+      num: (egp / exchange.rates["GBP"]).toFixed(2),
     },
   ];
 
   return {
-    articles: contentfulRes,
+    articles: article,
     widgetPairs,
-    etfs,
+    etf,
     commodities,
-    cryptoList: cryptoRes.data,
-    worldIndices,
+    cryptoList: crypto.data,
+    worldMarket,
     worldStocks,
-    egMarketData,
+    egMarket,
   };
 }
 
@@ -137,9 +123,9 @@ function getEntryImageUrl(image: unknown, width = 800): string {
 export default async function Home() {
   const {
     articles,
-    egMarketData,
+    egMarket,
     widgetPairs,
-    etfs,
+    etf,
     commodities,
     cryptoList,
     // worldIndices,
@@ -243,7 +229,7 @@ export default async function Home() {
 
         <CryptoTop cryptoTop={cryptoTop} />
 
-        <EgyMarketIndicesSection egMarketData={egMarketData} />
+        <EgyMarketIndicesSection egMarketData={egMarket} />
 
         <WorldMarketIndicesSection stocksBySector={stocksBySector} />
 
@@ -325,7 +311,7 @@ export default async function Home() {
             <CryptoSidebar cryptoSidebar={cryptoSidebar} />
 
             {/* ETF widget */}
-            <ETFSection etfs={etfs} />
+            <ETFSection etfs={etf} />
 
             {/* Commodities widget */}
             <CommoditiesSection commodities={commodities} />

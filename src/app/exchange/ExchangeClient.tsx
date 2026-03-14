@@ -11,12 +11,16 @@ import {
 } from "@remixicon/react";
 import { CurrencyInput } from "./CurrencyInput";
 import { useExchangeRates } from "@/hooks/useExchangeRates";
-import { toEGP, toUSD } from "@/lib/Data/exchangeData";
+import { ExchangeResponse, toEGP, toUSD } from "@/lib/Data/exchangeData";
 import { getCurrencyNameAr } from "@/lib/translateToArabic";
 
-export default function ExchangeClient() {
+export default function ExchangeClient({
+  initialData,
+}: {
+  initialData: { exchangeData: ExchangeResponse; changes: Record<string, number> };
+}) {
   const { rates, stableChanges, loading, error, lastUpdate, convert, refresh } =
-    useExchangeRates();
+    useExchangeRates(initialData);
 
   const [amount1, setAmount1] = useState<number | string>(1);
   const [currency1, setCurrency1] = useState("USD");

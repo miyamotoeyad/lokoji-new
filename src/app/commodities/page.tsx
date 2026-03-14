@@ -14,7 +14,8 @@ import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { petrolUpdate } from "@/lib/Array/EgyptPetrolList";
 
 const title = "أسعار السلع";
-const description = "تابع أسعار الذهب والفضة والنفط والوقود مقابل الجنيه المصري.";
+const description =
+  "تابع أسعار الذهب والفضة والنفط والوقود مقابل الجنيه المصري.";
 
 export const metadata: Metadata = generateStaticMetadata({
   title,
@@ -64,12 +65,32 @@ function CommodityCard({ item }: { item: CommodityItem }) {
         >
           <Icon size={20} />
         </div>
+
         {isFuel ? (
-          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-muted text-muted-foreground border border-border">
-            <RiGovernmentLine size={11} />
-            <span>سعر رسمي</span>
-          </div>
+          // ── Fuel: show real change % from old gov price ──
+          item.change !== 0 ? (
+            <div
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black ${
+                isUp
+                  ? "bg-green-500/10 text-green-500"
+                  : "bg-destructive/10 text-destructive"
+              }`}
+            >
+              {isUp ? (
+                <RiArrowUpSFill size={12} />
+              ) : (
+                <RiArrowDownSFill size={12} />
+              )}
+              <span dir="ltr">{Math.abs(item.change).toFixed(1)}%</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-muted text-muted-foreground border border-border">
+              <RiGovernmentLine size={11} />
+              <span>سعر رسمي</span>
+            </div>
+          )
         ) : (
+          // ── Gold / Silver / Oil: live change ──
           <div
             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black ${
               isUp
@@ -110,6 +131,22 @@ function CommodityCard({ item }: { item: CommodityItem }) {
             {item.priceEGP.toLocaleString()} ج.م
           </span>
         </div>
+
+        {/* Old price row — fuel only */}
+        {isFuel && item.oldPriceEGP && item.oldPriceEGP !== item.priceEGP && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-muted-foreground">
+              السابق
+            </span>
+            <span
+              className="text-xs font-bold text-muted-foreground line-through tabular-nums"
+              dir="ltr"
+            >
+              {item.oldPriceEGP.toLocaleString()} ج.م
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold text-muted-foreground">
             بالدولار
@@ -196,8 +233,8 @@ export default async function CommoditiesPage() {
               </span>
             </p>
             <p
-              className={`text-xs font-black flex items-center gap-1 ${
-                gold21.change >= 0 ? "text-green-500" : "text-primary-brand"
+              className={`text-xs font-black text-left flex items-center gap-1 ${
+                gold21.change >= 0 ? "text-green-500" : "text-destructive"
               }`}
               dir="ltr"
             >
@@ -259,14 +296,14 @@ export default async function CommoditiesPage() {
         <SectionHeader
           accentColor="bg-orange-500"
           title="الوقود"
-          badge="سعر اللتر"
+          badge={`${fuel.length} منتج · سعر اللتر`}
         />
-
-        {/* Gov notice */}
+        {/* Gov notice — add old prices date */}
         <div className="flex items-center gap-3 bg-orange-500/5 border border-orange-500/20 rounded-2xl px-5 py-3">
           <RiGovernmentLine size={16} className="text-orange-500 shrink-0" />
           <p className="text-xs font-bold text-orange-600 dark:text-orange-400">
-            أسعار الوقود محددة بقرار لجنة التسعير المصرية · آخر تحديث: {petrolUpdate}
+            أسعار الوقود محددة بقرار لجنة التسعير المصرية · آخر تحديث:{" "}
+            {petrolUpdate} · نسبة التغيير محسوبة من السعر السابق
           </p>
         </div>
 

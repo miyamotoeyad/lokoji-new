@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import ExchangePage from "./ExchangeClient";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
+import ExchangeClient from "./ExchangeClient";
+import { computeChanges, getExchangeRates, getPreviousExchangeRates } from "@/lib/Data/exchangeData";
 
 
 const title = "أسعار العملات"
@@ -12,6 +13,13 @@ export const metadata: Metadata = generateStaticMetadata({
   url: "/exchange",
 });
 
-export default function Page() {
-  return <ExchangePage />;
+export default async function ExchangePage() {
+  const [exchangeData, previousRates] = await Promise.all([
+    getExchangeRates("USD"),
+    getPreviousExchangeRates("USD"),
+  ]);
+
+  const changes = computeChanges(exchangeData.rates, previousRates);
+
+  return <ExchangeClient initialData={{ exchangeData, changes }} />;
 }

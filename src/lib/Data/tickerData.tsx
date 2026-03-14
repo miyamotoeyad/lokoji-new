@@ -1,6 +1,4 @@
-import { getExchangeRates } from "./exchangeData";
-import { getETFs } from "./etfData";
-import { getCommodities } from "./commoditiesData";
+import { getServerData } from "./serverData";
 
 export interface TickerItem {
   id: string;
@@ -11,18 +9,14 @@ export interface TickerItem {
 
 export async function getTickerItems(): Promise<TickerItem[]> {
   try {
-    const [exchangeData, etfs, commodities] = await Promise.all([
-      getExchangeRates("USD"),
-      getETFs(),
-      getCommodities(),
-    ]);
+    const { exchange, commodities, etf } = await getServerData();
 
     const items: TickerItem[] = [];
 
     // ── EXCHANGE RATES ─────────────────────────────────────────────────────
-    const egp = exchangeData.rates["EGP"] ?? 0;
-    const eur = exchangeData.rates["EUR"] ?? 1;
-    const gbp = exchangeData.rates["GBP"] ?? 1;
+    const egp = exchange.rates["EGP"] ?? 0;
+    const eur = exchange.rates["EUR"] ?? 1;
+    const gbp = exchange.rates["GBP"] ?? 1;
 
     items.push(
       {
@@ -45,26 +39,30 @@ export async function getTickerItems(): Promise<TickerItem[]> {
       },
     );
 
-    // ── EGX INDICES (from ETFs) ────────────────────────────────────────────
-    const egx30 = etfs.find((e) => e.slug === "egx30");
-    const egx70 = etfs.find((e) => e.slug === "egx70");
-    const egx100 = etfs.find((e) => e.slug === "egx100");
+    // ── EGX INDICES (from etf) ────────────────────────────────────────────
+    const egx30 = etf.find((e) => e.slug === "egx30");
+    const egx70 = etf.find((e) => e.slug === "egx70");
+    const egx100 = etf.find((e) => e.slug === "egx100");
 
-    if (egx30)
+    if (egx30 && egx30.point > 0)
       items.push({
         id: "egx30",
         title: "EGX30",
         num: egx30.point.toLocaleString("en-US", { maximumFractionDigits: 2 }),
         arrow: egx30.positive ? "up" : "down",
       });
-    if (egx70)
+
+    if (egx70 && egx70.point > 0)
+      // ← guard against 0
       items.push({
         id: "egx70",
         title: "EGX70",
         num: egx70.point.toLocaleString("en-US", { maximumFractionDigits: 2 }),
         arrow: egx70.positive ? "up" : "down",
       });
-    if (egx100)
+
+    if (egx100 && egx100.point > 0)
+      // ← guard against 0
       items.push({
         id: "egx100",
         title: "EGX100",
@@ -72,9 +70,9 @@ export async function getTickerItems(): Promise<TickerItem[]> {
         arrow: egx100.positive ? "up" : "down",
       });
 
-    // ── US ETFs ────────────────────────────────────────────────────────────
-    const spy = etfs.find((e) => e.slug === "spy");
-    const qqq = etfs.find((e) => e.slug === "qqq");
+    // ── US etf ────────────────────────────────────────────────────────────
+    const spy = etf.find((e) => e.slug === "spy");
+    const qqq = etf.find((e) => e.slug === "qqq");
 
     if (spy)
       items.push({

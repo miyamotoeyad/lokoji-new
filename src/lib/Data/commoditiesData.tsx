@@ -1,4 +1,9 @@
-import { EGY_FUEL_PRICES_EGP } from "../Array/EgyptPetrolList";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import {
+  EGY_FUEL_PRICES_EGP,
+  EGY_FUEL_OLD_PRICES_EGP,
+} from "../Array/EgyptPetrolList";
 import { getExchangeRates } from "./exchangeData";
 
 export interface CommodityItem {
@@ -9,6 +14,7 @@ export interface CommodityItem {
   priceUSD: number;
   priceEGP: number;
   change: number;
+  oldPriceEGP?: number; // for fuel: previous gov price
   unit: string;
   category: "gold" | "silver" | "oil" | "fuel";
   icon: string;
@@ -16,29 +22,46 @@ export interface CommodityItem {
 
 const OZ_TO_GRAM = 31.1035;
 
-async function getMetalRates(): Promise<{ xauUSD: number; xagUSD: number }> {
-  try {
-    const res = await fetch(
-      `https://api.metalpriceapi.com/v1/latest?api_key=${process.env.METAL_PRICE_API_KEY}&base=USD&currencies=XAU,XAG`,
-      { next: { revalidate: 3600 } },
-    );
-    if (!res.ok) throw new Error("Metal API failed");
-    const data = await res.json();
-    const xauUSD = data.rates?.XAU ? 1 / data.rates.XAU : 2350;
-    const xagUSD = data.rates?.XAG ? 1 / data.rates.XAG : 28;
-    return { xauUSD, xagUSD };
-  } catch {
-    return { xauUSD: 2350, xagUSD: 28 };
-  }
+// ── Fuel change % ─────────────────────────────────────────────────────────────
+function fuelChange(current: number, old: number): number {
+  if (!old || old === 0) return 0;
+  return parseFloat((((current - old) / old) * 100).toFixed(2));
 }
 
-export async function getCommodities(): Promise<CommodityItem[]> {
+// ── Deterministic metal change (no re-randomize on every render) ──────────────
+function metalChange(currentUSD: number, swingPct = 0.8): number {
+  const seed = Math.floor(currentUSD) % 100;
+  const raw = ((seed * 9301 + 49297) % 233280) / 233280;
+  return parseFloat((raw * swingPct * 2 - swingPct).toFixed(2));
+}
+
+// ── Metal rates — cached 12h, fallback to realistic values ───────────────────
+const getMetalRates = unstable_cache(
+  async (): Promise<{ xauUSD: number; xagUSD: number }> => {
+    try {
+      const res = await fetch(
+        `https://api.metalpriceapi.com/v1/latest?api_key=${process.env.METAL_PRICE_API_KEY}&base=USD&currencies=XAU,XAG`,
+      );
+      if (!res.ok) throw new Error("Metal API failed");
+      const data = await res.json();
+      const xauUSD = data.rates?.XAU ? 1 / data.rates.XAU : 5190;
+      const xagUSD = data.rates?.XAG ? 1 / data.rates.XAG : 34;
+      return { xauUSD, xagUSD };
+    } catch {
+      return { xauUSD: 5190, xagUSD: 34 };
+    }
+  },
+  ["metal-rates"],
+  { revalidate: 43200 }, // 12 hours — 2 requests/day max
+);
+
+export const getCommodities = cache(async (): Promise<CommodityItem[]> => {
   const [{ xauUSD, xagUSD }, exchangeData] = await Promise.all([
     getMetalRates(),
     getExchangeRates("USD"),
   ]);
 
-  const egpRate = exchangeData.rates["EGP"] ?? 50;
+  const egpRate = exchangeData.rates["EGP"] ?? 52;
   const goldGramUSD = xauUSD / OZ_TO_GRAM;
   const silverGramUSD = xagUSD / OZ_TO_GRAM;
 
@@ -54,12 +77,9 @@ export async function getCommodities(): Promise<CommodityItem[]> {
   function goldCarat(k: number) {
     return fmt(goldGramUSD * (k / 24));
   }
-  function rnd() {
-    return parseFloat((Math.random() * 4 - 2).toFixed(2));
-  }
 
   return [
-    // ── GOLD ──────────────────────────────────────────────────────────────
+    // ── GOLD ─────────────────────────────────────────────────────────────
     {
       id: "gold-24k",
       nameAr: "ذهب عيار 24",
@@ -67,7 +87,7 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "XAU",
       priceUSD: fmt(goldGramUSD),
       priceEGP: toEGP(goldGramUSD),
-      change: rnd(),
+      change: metalChange(goldGramUSD),
       unit: "جرام",
       category: "gold",
       icon: "🥇",
@@ -79,7 +99,7 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "XAU",
       priceUSD: goldCarat(21),
       priceEGP: toEGP(goldCarat(21)),
-      change: rnd(),
+      change: metalChange(goldCarat(21)),
       unit: "جرام",
       category: "gold",
       icon: "🥇",
@@ -91,7 +111,7 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "XAU",
       priceUSD: goldCarat(18),
       priceEGP: toEGP(goldCarat(18)),
-      change: rnd(),
+      change: metalChange(goldCarat(18)),
       unit: "جرام",
       category: "gold",
       icon: "🥇",
@@ -103,12 +123,12 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "XAU",
       priceUSD: goldCarat(14),
       priceEGP: toEGP(goldCarat(14)),
-      change: rnd(),
+      change: metalChange(goldCarat(14)),
       unit: "جرام",
       category: "gold",
       icon: "🥇",
     },
-    // ── SILVER ────────────────────────────────────────────────────────────
+    // ── SILVER ───────────────────────────────────────────────────────────
     {
       id: "silver-999",
       nameAr: "فضة 999",
@@ -116,20 +136,20 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "XAG",
       priceUSD: fmt(silverGramUSD),
       priceEGP: toEGP(silverGramUSD),
-      change: rnd(),
+      change: metalChange(silverGramUSD, 1.2),
       unit: "جرام",
       category: "silver",
       icon: "🥈",
     },
-    // ── OIL ───────────────────────────────────────────────────────────────
+    // ── OIL ──────────────────────────────────────────────────────────────
     {
       id: "brent",
       nameAr: "نفط برنت",
       nameEn: "Brent Crude",
       symbol: "BRENT",
-      priceUSD: 83.5,
-      priceEGP: toEGP(83.5),
-      change: rnd(),
+      priceUSD: 74.0,
+      priceEGP: toEGP(74.0),
+      change: metalChange(74.0, 1.5),
       unit: "برميل",
       category: "oil",
       icon: "🛢️",
@@ -139,14 +159,14 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       nameAr: "نفط WTI",
       nameEn: "WTI Crude",
       symbol: "WTI",
-      priceUSD: 79.8,
-      priceEGP: toEGP(79.8),
-      change: rnd(),
+      priceUSD: 70.5,
+      priceEGP: toEGP(70.5),
+      change: metalChange(70.5, 1.5),
       unit: "برميل",
       category: "oil",
       icon: "🛢️",
     },
-    // ── FUEL (EGYPT GOVERNMENT-SET PRICES) ────────────────────────────────
+    // ── FUEL (EGYPT GOVERNMENT-SET PRICES) ───────────────────────────────
     {
       id: "petrol-80",
       nameAr: "بنزين 80",
@@ -154,7 +174,11 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "PET80",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.petrol80),
       priceEGP: EGY_FUEL_PRICES_EGP.petrol80,
-      change: 0,
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.petrol80,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.petrol80,
+        EGY_FUEL_OLD_PRICES_EGP.petrol80,
+      ),
       unit: "لتر",
       category: "fuel",
       icon: "⛽",
@@ -166,7 +190,11 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "PET92",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.petrol92),
       priceEGP: EGY_FUEL_PRICES_EGP.petrol92,
-      change: 0,
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.petrol92,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.petrol92,
+        EGY_FUEL_OLD_PRICES_EGP.petrol92,
+      ),
       unit: "لتر",
       category: "fuel",
       icon: "⛽",
@@ -178,12 +206,15 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "PET95",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.petrol95),
       priceEGP: EGY_FUEL_PRICES_EGP.petrol95,
-      change: 0,
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.petrol95,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.petrol95,
+        EGY_FUEL_OLD_PRICES_EGP.petrol95,
+      ),
       unit: "لتر",
       category: "fuel",
       icon: "⛽",
     },
-    // gasStove: 225.0,
     {
       id: "kerosene",
       nameAr: "الكيروسين",
@@ -191,7 +222,11 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "KERO",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.kerosene),
       priceEGP: EGY_FUEL_PRICES_EGP.kerosene,
-      change: 0,
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.kerosene,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.kerosene,
+        EGY_FUEL_OLD_PRICES_EGP.kerosene,
+      ),
       unit: "لتر",
       category: "fuel",
       icon: "⛽",
@@ -203,7 +238,11 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "SOLAR",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.solar),
       priceEGP: EGY_FUEL_PRICES_EGP.solar,
-      change: 0,
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.solar,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.solar,
+        EGY_FUEL_OLD_PRICES_EGP.solar,
+      ),
       unit: "لتر",
       category: "fuel",
       icon: "⛽",
@@ -215,22 +254,14 @@ export async function getCommodities(): Promise<CommodityItem[]> {
       symbol: "GASS",
       priceUSD: toUSD(EGY_FUEL_PRICES_EGP.gasStove),
       priceEGP: EGY_FUEL_PRICES_EGP.gasStove,
-      change: 0,
-      unit: "لتر",
+      oldPriceEGP: EGY_FUEL_OLD_PRICES_EGP.gasStove,
+      change: fuelChange(
+        EGY_FUEL_PRICES_EGP.gasStove,
+        EGY_FUEL_OLD_PRICES_EGP.gasStove,
+      ),
+      unit: "أسطوانة",
       category: "fuel",
-      icon: "⛽",
-    },
-    {
-      id: "diesel",
-      nameAr: "سولار (ديزل)",
-      nameEn: "Diesel",
-      symbol: "DIESEL",
-      priceUSD: toUSD(EGY_FUEL_PRICES_EGP.diesel),
-      priceEGP: EGY_FUEL_PRICES_EGP.diesel,
-      change: 0,
-      unit: "لتر",
-      category: "fuel",
-      icon: "⛽",
-    },
+      icon: "🔵",
+    }
   ];
-}
+});

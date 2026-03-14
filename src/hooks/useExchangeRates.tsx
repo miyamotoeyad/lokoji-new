@@ -1,11 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  getExchangeRates,
-  convertCurrency,
-  type Rates,
-} from "@/lib/Data/exchangeData";
+import { useState, useCallback } from "react";
+import { convertCurrency, type Rates, type ExchangeResponse } from "@/lib/Data/exchangeData";
 
 interface UseExchangeRatesReturn {
   rates: Rates;
@@ -17,40 +13,48 @@ interface UseExchangeRatesReturn {
   refresh: () => void;
 }
 
-export function useExchangeRates(base = "USD"): UseExchangeRatesReturn {
-  const [rates, setRates] = useState<Rates>({});
-  const [stableChanges, setStableChanges] = useState<Record<string, number>>(
-    {},
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState("");
+interface InitialData {
+  exchangeData: ExchangeResponse;
+  changes: Record<string, number>;
+}
 
-  const load = useCallback(async () => {
+export function useExchangeRates({ exchangeData, changes }: InitialData): UseExchangeRatesReturn {
+  const [rates, setRates] = useState<Rates>(exchangeData.rates);
+  const [stableChanges, setStableChanges] = useState<Record<string, number>>(changes);
+  const [loading, setLoading] = useState(false);  // ← false — data already loaded from server
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState(
+    new Date(exchangeData.time_last_update_utc).toLocaleTimeString("ar-EG"),
+  );
+
+  // Only called on manual refresh — hits our own API route, not the external API directly
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getExchangeRates(base);
-      setRates(data.rates);
-      setLastUpdate(new Date().toLocaleTimeString("ar-EG"));
+      const res = await fetch("/api/exchange?base=USD");
+      if (!res.ok) throw new Error("fetch failed");
+      const data: ExchangeResponse = await res.json();
 
-      // ✅ Math.random() here — inside async callback, NOT in render or effect body
-      const changes: Record<string, number> = {};
-      Object.keys(data.rates).forEach((c) => {
-        changes[c] = Math.random() * 2 - 1;
+      // Compute changes against the current rates before updating
+      const newChanges: Record<string, number> = {};
+      Object.keys(data.rates).forEach((code) => {
+        const prev = rates[code];
+        const curr = data.rates[code];
+        newChanges[code] = prev && prev !== 0
+          ? parseFloat((((curr - prev) / prev) * 100).toFixed(2))
+          : 0;
       });
-      setStableChanges(changes);
-    } catch (e) {
+
+      setRates(data.rates);
+      setStableChanges(newChanges);
+      setLastUpdate(new Date(data.time_last_update_utc).toLocaleTimeString("ar-EG"));
+    } catch {
       setError("تعذّر تحميل الأسعار. حاول مرة أخرى.");
-      console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [base]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  }, [rates]);
 
   const convert = useCallback(
     (amount: number, from: string, to: string) =>
@@ -58,13 +62,5 @@ export function useExchangeRates(base = "USD"): UseExchangeRatesReturn {
     [rates],
   );
 
-  return {
-    rates,
-    stableChanges,
-    loading,
-    error,
-    lastUpdate,
-    convert,
-    refresh: load,
-  };
+  return { rates, stableChanges, loading, error, lastUpdate, convert, refresh };
 }
