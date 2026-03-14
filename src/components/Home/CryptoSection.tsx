@@ -1,14 +1,14 @@
-import { MarketData } from "@/app/crypto/page";
 import { RiArrowLeftSLine, RiBitCoinLine } from "@remixicon/react";
 import Link from "next/link";
 import { ChangePill } from "./ChangePill";
+import { CryptoCurrency } from "@/types/CryptoType";
 
 interface CryptoSectionProps {
-  cryptoTop?: MarketData[];
-  cryptoSidebar?: MarketData[];
+  cryptoTop?: CryptoCurrency[];
+  cryptoSidebar?: CryptoCurrency[];
 }
 
-export async function CryptoTop({ cryptoTop  = [] }: CryptoSectionProps) {
+export async function CryptoTop({ cryptoTop = [] }: CryptoSectionProps) {
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between">
@@ -27,7 +27,7 @@ export async function CryptoTop({ cryptoTop  = [] }: CryptoSectionProps) {
         </Link>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {cryptoTop.map((coin: MarketData) => {
+        {cryptoTop.map((coin: CryptoCurrency) => {
           const change = coin.quote.USD.percent_change_1h;
           const isUp = change >= 0;
           const color = isUp ? "#22c55e" : "var(--color-destructive)";
@@ -72,7 +72,7 @@ export async function CryptoTop({ cryptoTop  = [] }: CryptoSectionProps) {
   );
 }
 
-export function CryptoSidebar({ cryptoSidebar  = [] }: CryptoSectionProps) {
+export function CryptoSidebar({ cryptoSidebar = [] }: CryptoSectionProps) {
   return (
     <div className="bg-card rounded-3xl border border-border p-6 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
@@ -90,7 +90,7 @@ export function CryptoSidebar({ cryptoSidebar  = [] }: CryptoSectionProps) {
         </Link>
       </div>
       <div className="divide-y divide-border">
-        {cryptoSidebar.slice(0, 5).map((coin: MarketData) => {
+        {cryptoSidebar.slice(0, 5).map((coin: CryptoCurrency) => {
           const change = coin.quote.USD.percent_change_1h;
           return (
             <Link
