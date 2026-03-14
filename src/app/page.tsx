@@ -106,7 +106,7 @@ async function getHomeData() {
     widgetPairs,
     etf,
     commodities,
-    cryptoList: crypto.data,
+    cryptoList: crypto,
     worldMarket,
     worldStocks,
     egMarket,
