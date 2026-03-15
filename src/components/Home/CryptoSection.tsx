@@ -1,14 +1,14 @@
 import { RiArrowLeftSLine, RiBitCoinLine } from "@remixicon/react";
 import Link from "next/link";
 import { ChangePill } from "./ChangePill";
-import { CryptoCurrency } from "@/types/CryptoType";
+import type { CryptoItem } from "@/lib/Data/getCryptoData"; // ← import from data file not types
 
 interface CryptoSectionProps {
-  cryptoTop?: CryptoCurrency[];
-  cryptoSidebar?: CryptoCurrency[];
+  cryptoTop?: CryptoItem[];
+  cryptoSidebar?: CryptoItem[];
 }
 
-export async function CryptoTop({ cryptoTop = [] }: CryptoSectionProps) {
+export function CryptoTop({ cryptoTop = [] }: CryptoSectionProps) { // ← remove async
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between">
@@ -19,18 +19,15 @@ export async function CryptoTop({ cryptoTop = [] }: CryptoSectionProps) {
           </div>
           <h2 className="text-xl font-black">العملات الرقمية</h2>
         </div>
-        <Link
-          href="/crypto"
-          className="btn text-xs py-2 px-4 flex items-center gap-1"
-        >
+        <Link href="/crypto" className="btn text-xs py-2 px-4 flex items-center gap-1">
           كل العملات الرقمية <RiArrowLeftSLine size={14} />
         </Link>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {cryptoTop.map((coin: CryptoCurrency) => {
+        {cryptoTop.map((coin) => {
           const change = coin.quote.USD.percent_change_1h;
-          const isUp = change >= 0;
-          const color = isUp ? "#22c55e" : "var(--color-destructive)";
+          const isUp   = change >= 0;
+          const color  = isUp ? "#22c55e" : "var(--color-destructive)";
           return (
             <Link
               key={coin.id}
@@ -50,12 +47,8 @@ export async function CryptoTop({ cryptoTop = [] }: CryptoSectionProps) {
               <p className="text-xs font-bold text-foreground truncate relative z-10 group-hover:text-primary-brand transition-colors">
                 {coin.name}
               </p>
-              <p
-                className="text-sm font-black text-foreground tabular-nums relative z-10"
-                dir="ltr"
-              >
-                $
-                {coin.quote.USD.price.toLocaleString(undefined, {
+              <p className="text-sm font-black text-foreground tabular-nums relative z-10" dir="ltr">
+                ${coin.quote.USD.price.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: coin.quote.USD.price >= 1 ? 2 : 4,
                 })}
@@ -82,15 +75,12 @@ export function CryptoSidebar({ cryptoSidebar = [] }: CryptoSectionProps) {
           </div>
           <h3 className="font-black text-base">العملات الرقمية</h3>
         </div>
-        <Link
-          href="/crypto"
-          className="text-[10px] text-muted-foreground hover:text-primary-brand transition-colors font-bold"
-        >
+        <Link href="/crypto" className="text-[10px] text-muted-foreground hover:text-primary-brand transition-colors font-bold">
           الكل
         </Link>
       </div>
       <div className="divide-y divide-border">
-        {cryptoSidebar.slice(0, 5).map((coin: CryptoCurrency) => {
+        {cryptoSidebar.slice(0, 5).map((coin) => {
           const change = coin.quote.USD.percent_change_1h;
           return (
             <Link
@@ -112,12 +102,8 @@ export function CryptoSidebar({ cryptoSidebar = [] }: CryptoSectionProps) {
                 </div>
               </div>
               <div className="flex flex-col items-end gap-1 shrink-0">
-                <span
-                  className="text-xs font-black text-foreground tabular-nums"
-                  dir="ltr"
-                >
-                  $
-                  {coin.quote.USD.price.toLocaleString(undefined, {
+                <span className="text-xs font-black text-foreground tabular-nums" dir="ltr">
+                  ${coin.quote.USD.price.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: coin.quote.USD.price >= 1 ? 2 : 4,
                   })}

@@ -46,3 +46,27 @@ export interface CryptoCurrency {
     };
   };
 }
+
+export interface CryptoItem {
+  id: number;
+  name: string;
+  symbol: string;
+  slug: string;
+  cmc_rank: number;
+  circulating_supply: number;
+  max_supply: number | null;
+  total_supply: number;
+  quote: {
+    USD: {
+      price: number;
+      market_cap: number;
+      volume_24h: number;
+      percent_change_1h: number;
+      percent_change_24h: number;
+      percent_change_7d: number;
+      percent_change_30d: number;
+      percent_change_60d: number;
+      percent_change_90d: number;
+    };
+  };
+}
