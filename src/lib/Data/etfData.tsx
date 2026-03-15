@@ -18,9 +18,7 @@ export interface ETFItem {
   category: "egypt" | "global" | "sector" | "commodities" | "bonds" | "arab";
 }
 
-async function fetchYahooQuote(
-  ticker: string,
-): Promise<{ price: number; change: number; changePercent: number } | null> {
+async function fetchYahooQuote(ticker: string) {
   try {
     const res = await fetch(
       `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`,
@@ -34,9 +32,14 @@ async function fetchYahooQuote(
     const price = (meta.regularMarketPrice ?? 0) as number;
     const prevClose = (meta.previousClose ??
       meta.chartPreviousClose ??
+      meta.regularMarketPreviousClose ??
       price) as number;
+
+    if (price === 0) return null;
+
     const change = parseFloat((price - prevClose).toFixed(2));
-    const changePercent = parseFloat(((change / prevClose) * 100).toFixed(2));
+    const changePercent =
+      prevClose !== 0 ? parseFloat(((change / prevClose) * 100).toFixed(2)) : 0;
 
     return { price, change, changePercent };
   } catch {
@@ -105,18 +108,25 @@ const getCachedETFs = unstable_cache(
       const live = etf.yahooTicker
         ? await fetchYahooQuote(etf.yahooTicker)
         : null;
-      const data = live ??
+      // In getCachedETFs, update the mapping:
+      const raw = live ??
         FALLBACK[etf.ticker] ?? { price: 0, change: 0, changePercent: 0 };
+
+      // Guard against null values from Yahoo meta
+      const price = raw.price ?? 0;
+      const change = raw.change ?? 0;
+      const changePercent = raw.changePercent ?? 0;
+
       return {
         id: etf.id,
         title: etf.titleAr,
         titleEn: etf.titleEn,
         ticker: etf.ticker,
         yahooTicker: etf.yahooTicker,
-        point: data.price,
-        change: Math.abs(data.change),
-        changePercent: Math.abs(data.changePercent),
-        positive: data.changePercent >= 0,
+        point: price,
+        change: Math.abs(change),
+        changePercent: Math.abs(changePercent),
+        positive: changePercent >= 0,
         slug: etf.slug,
         currency: etf.currency,
         market: etf.market,
