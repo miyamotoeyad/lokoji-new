@@ -134,9 +134,10 @@ export default async function ETFDetailPage({ params }: Props) {
                   <RiArrowDownSFill size={16} />
                 )}
                 {item.positive ? "+" : "-"}
+                {(item.change ?? 0).toFixed(2)}
                 {item.change.toFixed(2)}
                 <span className="opacity-70">
-                  ({item.changePercent.toFixed(2)}%)
+                  ({(item.changePercent ?? 0).toFixed(2)}%)
                 </span>
               </div>
             </div>
@@ -175,13 +176,14 @@ export default async function ETFDetailPage({ params }: Props) {
               label="السعر الحالي"
               value={`${item.point.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${item.currency}`}
             />
+
             <StatCard
               label="التغيير اليومي"
-              value={`${item.positive ? "+" : "-"}${item.change.toFixed(2)}`}
+              value={`${item.positive ? "+" : "-"}${(item.change ?? 0).toFixed(2)}`}
             />
             <StatCard
               label="نسبة التغيير"
-              value={`${item.positive ? "+" : "-"}${item.changePercent.toFixed(2)}%`}
+              value={`${item.positive ? "+" : "-"}${(item.changePercent ?? 0).toFixed(2)}%`}
             />
             <StatCard label="رمز التداول" value={item.ticker} />
           </div>
