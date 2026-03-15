@@ -50,31 +50,97 @@ const formatter = new Intl.NumberFormat("en", {
 export const revalidate = 300;
 
 function buildStats(stock: WorldStock) {
+  const currency = stock.currency ?? "USD";
+  const fmt = (n: number, decimals = 2) =>
+    n > 0
+      ? n.toLocaleString(undefined, {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })
+      : "—";
+
   return [
-    { label: "رمز السهم", value: stock.ticker },
-    { label: "البورصة", value: stock.exchange },
-    { label: "القطاع", value: stock.sector },
+    // ── Price data ──────────────────────────────────────────────────────────
     {
-      label: "السعر الحالي",
-      value: `$${stock.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      group: "بيانات السعر",
+      label: "سعر الافتتاح",
+      value: stock.openPrice > 0 ? `${currency} ${fmt(stock.openPrice)}` : "—",
     },
     {
-      label: "التغيير",
-      value: `${stock.positive ? "+" : ""}${stock.change.toFixed(2)}`,
+      group: "بيانات السعر",
+      label: "أعلى سعر اليوم",
+      value: stock.dayHigh > 0 ? `${currency} ${fmt(stock.dayHigh)}` : "—",
     },
     {
-      label: "نسبة التغيير",
-      value: `${Math.abs(stock.changePercent).toFixed(2)}%`,
+      group: "بيانات السعر",
+      label: "أقل سعر اليوم",
+      value: stock.dayLow > 0 ? `${currency} ${fmt(stock.dayLow)}` : "—",
     },
     {
-      label: "رأس المال السوقي",
+      group: "بيانات السعر",
+      label: "سعر الإغلاق السابق",
+      value: stock.prevClose > 0 ? `${currency} ${fmt(stock.prevClose)}` : "—",
+    },
+    // ── Volume ──────────────────────────────────────────────────────────────
+    {
+      group: "التداول",
+      label: "حجم التداول",
+      value: stock.volume > 0 ? stock.volume.toLocaleString() : "—",
+    },
+    {
+      group: "التداول",
+      label: "متوسط حجم التداول",
+      value: stock.avgVolume > 0 ? stock.avgVolume.toLocaleString() : "—",
+    },
+    {
+      group: "التداول",
+      label: "إجمالي القيمة المتداولة",
+      value:
+        stock.totalValue > 0 ? `$${formatter.format(stock.totalValue)}` : "—",
+    },
+    // ── 52-week ──────────────────────────────────────────────────────────────
+    {
+      group: "النطاق السنوي",
+      label: "الأعلى سنوياً",
+      value:
+        stock.weekHigh52 > 0 ? `${currency} ${fmt(stock.weekHigh52)}` : "—",
+    },
+    {
+      group: "النطاق السنوي",
+      label: "الأدنى سنوياً",
+      value: stock.weekLow52 > 0 ? `${currency} ${fmt(stock.weekLow52)}` : "—",
+    },
+    // ── Fundamentals ────────────────────────────────────────────────────────
+    {
+      group: "المؤشرات المالية",
+      label: "القيمة السوقية",
       value:
         stock.marketCap > 0 ? `$${formatter.format(stock.marketCap)}` : "—",
     },
     {
-      label: "حجم التداول",
-      value: stock.volume > 0 ? formatter.format(stock.volume) : "—",
+      group: "المؤشرات المالية",
+      label: "العائد على الأرباح",
+      value:
+        stock.dividendYield > 0 ? `${stock.dividendYield.toFixed(2)}%` : "—",
     },
+    {
+      group: "المؤشرات المالية",
+      label: "العائد على السهم",
+      value: stock.eps !== 0 ? `${currency} ${fmt(Math.abs(stock.eps))}` : "—",
+    },
+    {
+      group: "المؤشرات المالية",
+      label: "مكرر الأرباح (P/E)",
+      value: stock.peRatio > 0 ? `${fmt(stock.peRatio)}x` : "—",
+    },
+    // ── Info ─────────────────────────────────────────────────────────────────
+    { group: "معلومات", label: "رمز التداول", value: stock.ticker },
+    {
+      group: "معلومات",
+      label: "البورصة",
+      value: `${stock.exchange} · ${currency}`,
+    },
+    { group: "معلومات", label: "القطاع", value: stock.sector },
   ];
 }
 
@@ -232,6 +298,7 @@ export default async function WorldStockSlugPage({
 
         {/* ── STATS + SIDEBAR ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── STATS ── */}
           <div className="lg:col-span-2 bg-card border border-border rounded-3xl p-5 md:p-6">
             <div className="flex items-center gap-2.5 mb-5">
               <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
@@ -241,25 +308,100 @@ export default async function WorldStockSlugPage({
                 بيانات السهم
               </h2>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="bg-muted/50 border border-border rounded-2xl p-4 space-y-1.5 hover:border-primary-brand/30 transition-colors group"
-                >
-                  <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wide">
-                    <RiStackLine size={11} />
-                    {stat.label}
-                  </span>
-                  <span
-                    className="text-xs md:text-sm font-black text-foreground tabular-nums group-hover:text-primary-brand transition-colors block break-all"
+
+            {/* Group stats by category */}
+            {[
+              "بيانات السعر",
+              "التداول",
+              "النطاق السنوي",
+              "المؤشرات المالية",
+              "معلومات",
+            ].map((group) => {
+              const groupStats = stats.filter((s) => s.group === group);
+              return (
+                <div key={group} className="mb-5 last:mb-0">
+                  <p className="text-[10px] font-black text-primary-brand uppercase tracking-widest mb-2 border-b border-border pb-1">
+                    {group}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {groupStats.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="bg-muted/50 border border-border rounded-2xl p-3 space-y-1 hover:border-primary-brand/30 transition-colors group"
+                      >
+                        <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wide">
+                          <RiStackLine size={10} />
+                          {stat.label}
+                        </span>
+                        <span
+                          className="text-xs md:text-sm font-black text-foreground tabular-nums group-hover:text-primary-brand transition-colors block break-all"
+                          dir="ltr"
+                        >
+                          {stat.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* ── 52-week range bar ── */}
+            {stock.weekHigh52 > 0 &&
+              stock.weekLow52 > 0 &&
+              stock.weekHigh52 !== stock.weekLow52 && (
+                <div className="mt-4 bg-muted/50 border border-border rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                    <span>النطاق السنوي</span>
+                    <span dir="ltr">
+                      {stock.weekLow52.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                      {" — "}
+                      {stock.weekHigh52.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="absolute top-0 left-0 h-full bg-primary-brand/30 rounded-full"
+                      style={{
+                        width: `${Math.min(Math.max(((stock.price - stock.weekLow52) / (stock.weekHigh52 - stock.weekLow52)) * 100, 0), 100)}%`,
+                      }}
+                    />
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary-brand border-2 border-card shadow"
+                      style={{
+                        left: `calc(${Math.min(Math.max(((stock.price - stock.weekLow52) / (stock.weekHigh52 - stock.weekLow52)) * 100, 0), 100)}% - 6px)`,
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="flex justify-between text-[10px] text-muted-foreground font-bold"
                     dir="ltr"
                   >
-                    {stat.value}
-                  </span>
+                    <span>
+                      أدنى $
+                      {stock.weekLow52.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                    <span className="text-primary-brand font-black">
+                      $
+                      {stock.price.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                    <span>
+                      أعلى $
+                      {stock.weekHigh52.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
           </div>
 
           <div className="space-y-4">

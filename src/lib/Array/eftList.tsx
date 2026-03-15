@@ -13,8 +13,8 @@ export const ETF_LIST = [
   },
   {
     id: "2",
-    ticker: "^EGX70.CA",
-    yahooTicker: "^EGX70.CA",
+    ticker: "^EGX70EWI.CA",
+    yahooTicker: "^EGX70EWI.CA",
     titleAr: "مؤشر EGX70",
     titleEn: "EGX 70 Index",
     slug: "egx70",

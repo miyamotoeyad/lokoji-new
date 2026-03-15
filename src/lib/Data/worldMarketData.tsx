@@ -12,44 +12,124 @@ export interface WorldMarketItem {
   change: number;
   changePercent: number;
   positive: boolean;
+  // ── Extended fields ──────────────────────────────────────────────────────
+  prevClose: number;
+  openPrice: number;
+  dayHigh: number;
+  dayLow: number;
+  weekHigh52: number;
+  weekLow52: number;
+  volume: number;
+  currency: string;
 }
 
-type RawQuote = {
+interface RawQuote {
   price: number;
   change: number;
   changePercent: number;
+  prevClose: number;
+  openPrice: number;
+  dayHigh: number;
+  dayLow: number;
+  weekHigh52: number;
+  weekLow52: number;
+  volume: number;
+  currency: string;
+}
+
+const HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  Accept: "application/json, text/plain, */*",
+  "Accept-Language": "en-US,en;q=0.9",
+  Origin: "https://finance.yahoo.com",
+  Referer: "https://finance.yahoo.com/",
 };
 
 async function fetchSingleIndex(ticker: string): Promise<RawQuote | null> {
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`,
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          Accept: "application/json",
-        },
-      },
+      `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`,
+      { headers: HEADERS },
     );
-    if (!res.ok) return null;
 
-    const json = await res.json();
-    const meta = json?.chart?.result?.[0]?.meta;
+    const finalRes = res.ok
+      ? res
+      : await fetch(
+          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`,
+          { headers: HEADERS },
+        );
+
+    if (!finalRes.ok) return null;
+
+    const json = await finalRes.json();
+    const result = json?.chart?.result?.[0];
+    const meta = result?.meta;
     if (!meta) return null;
 
     const price = (meta.regularMarketPrice ?? 0) as number;
-    const prevClose = (meta.previousClose ??
-      meta.chartPreviousClose ??
+    const prevClose = (meta.chartPreviousClose ??
+      meta.previousClose ??
+      meta.regularMarketPreviousClose ??
       price) as number;
+
+    if (price === 0) return null;
+
     const change = parseFloat((price - prevClose).toFixed(2));
     const changePct =
       prevClose !== 0 ? parseFloat(((change / prevClose) * 100).toFixed(2)) : 0;
 
-    return { price, change, changePercent: changePct };
+    // ── Extract from indicators array ─────────────────────────────────────
+    const opens: number[] = result?.indicators?.quote?.[0]?.open ?? [];
+    const highs: number[] = result?.indicators?.quote?.[0]?.high ?? [];
+    const lows: number[] = result?.indicators?.quote?.[0]?.low ?? [];
+
+    const openPrice =
+      opens.find((v) => v != null && v > 0) ??
+      ((meta.regularMarketOpen ?? 0) as number);
+    const highFromArr = highs.filter((v) => v != null && v > 0);
+    const lowFromArr = lows.filter((v) => v != null && v > 0);
+    const dayHigh =
+      highFromArr.length > 0
+        ? Math.max(...highFromArr)
+        : ((meta.regularMarketDayHigh ?? 0) as number);
+    const dayLow =
+      lowFromArr.length > 0
+        ? Math.min(...lowFromArr)
+        : ((meta.regularMarketDayLow ?? 0) as number);
+
+    return {
+      price,
+      change,
+      changePercent: changePct,
+      prevClose,
+      openPrice: parseFloat((openPrice as number).toFixed(2)),
+      dayHigh: parseFloat(dayHigh.toFixed(2)),
+      dayLow: parseFloat(dayLow.toFixed(2)),
+      weekHigh52: (meta.fiftyTwoWeekHigh ?? 0) as number,
+      weekLow52: (meta.fiftyTwoWeekLow ?? 0) as number,
+      volume: (meta.regularMarketVolume ?? 0) as number,
+      currency: (meta.currency ?? "USD") as string,
+    };
   } catch {
     return null;
   }
+}
+
+function emptyQuote(): RawQuote {
+  return {
+    price: 0,
+    change: 0,
+    changePercent: 0,
+    prevClose: 0,
+    openPrice: 0,
+    dayHigh: 0,
+    dayLow: 0,
+    weekHigh52: 0,
+    weekLow52: 0,
+    volume: 0,
+    currency: "USD",
+  };
 }
 
 // ── Concurrency limiter ───────────────────────────────────────────────────────
@@ -69,7 +149,7 @@ async function fetchWithConcurrency<T>(
   return results;
 }
 
-// ── Cached batch — ONE set of requests per 5 min across ALL visitors ──────────
+// ── Cached batch ──────────────────────────────────────────────────────────────
 const getCachedIndices = unstable_cache(
   async (): Promise<Record<string, RawQuote>> => {
     const tasks = WORLD_INDICES.map(
@@ -83,7 +163,7 @@ const getCachedIndices = unstable_cache(
     }
     return map;
   },
-  ["world-market-indices"],
+  ["world-market-indices-v2"], // ← bumped to invalidate old cache
   { revalidate: 300 },
 );
 
@@ -93,7 +173,7 @@ export const getWorldMarketData = cache(
     const quotes = await getCachedIndices();
 
     return WORLD_INDICES.map((i) => {
-      const q = quotes[i.ticker] ?? { price: 0, change: 0, changePercent: 0 };
+      const q = quotes[i.ticker] ?? emptyQuote();
       return {
         id: i.ticker,
         slug: i.slug,
@@ -104,17 +184,26 @@ export const getWorldMarketData = cache(
         change: q.change,
         changePercent: q.changePercent,
         positive: q.changePercent >= 0,
+        prevClose: q.prevClose,
+        openPrice: q.openPrice,
+        dayHigh: q.dayHigh,
+        dayLow: q.dayLow,
+        weekHigh52: q.weekHigh52,
+        weekLow52: q.weekLow52,
+        volume: q.volume,
+        currency: q.currency,
       };
     });
   },
 );
 
+// ── Candles ───────────────────────────────────────────────────────────────────
 export const getIndexCandles = unstable_cache(
   async (ticker: string): Promise<{ time: string; value: number }[]> => {
     try {
       const res = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=5m&range=1d`,
-        { headers: { "User-Agent": "Mozilla/5.0" } },
+        `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=5m&range=1d`,
+        { headers: HEADERS },
       );
       if (!res.ok) return [];
 

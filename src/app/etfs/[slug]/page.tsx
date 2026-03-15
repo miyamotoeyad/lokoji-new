@@ -3,13 +3,14 @@ import {
   RiArrowUpSFill,
   RiArrowDownSFill,
   RiFundsLine,
-  RiBarChartLine,
+  RiLineChartLine,
   RiInformationLine,
-  RiRefreshLine,
   RiArrowLeftSLine,
+  RiPieChartLine,
+  RiStackLine,
 } from "@remixicon/react";
 import Link from "next/link";
-import { getETFs } from "@/lib/Data/etfData";
+import { getETFs, type ETFItem } from "@/lib/Data/etfData";
 import ETFChart from "@/components/Charts/ETFChart";
 import { getIntradayCandles } from "@/lib/Data/chartData";
 import {
@@ -19,7 +20,6 @@ import {
 import { getJsonLdETFSlug } from "@/lib/Schemas/getJsonLd";
 
 export const dynamicParams = true;
-// ← no revalidate — unstable_cache handles it
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,176 +32,307 @@ export async function generateMetadata({ params }: { params: ETFParams }) {
   return generateETFMetadata({ params });
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-card border border-border rounded-2xl p-4 space-y-1">
-      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-        {label}
-      </p>
-      <p
-        className="text-base font-black text-foreground tabular-nums"
-        dir="ltr"
-      >
-        {value}
-      </p>
-    </div>
-  );
+function fmt(n: number, decimals = 2) {
+  return n > 0
+    ? n.toLocaleString("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })
+    : "—";
+}
+
+function buildStats(item: ETFItem) {
+  const c = item.currency;
+  return [
+    {
+      group: "بيانات السعر",
+      label: "سعر الافتتاح",
+      value: item.prevClose > 0 ? `${fmt(item.prevClose)} ${c}` : "—",
+    },
+    {
+      group: "بيانات السعر",
+      label: "أعلى سعر اليوم",
+      value: item.dayHigh > 0 ? `${fmt(item.dayHigh)} ${c}` : "—",
+    },
+    {
+      group: "بيانات السعر",
+      label: "أدنى سعر اليوم",
+      value: item.dayLow > 0 ? `${fmt(item.dayLow)} ${c}` : "—",
+    },
+    {
+      group: "بيانات السعر",
+      label: "إغلاق أمس",
+      value: item.prevClose > 0 ? `${fmt(item.prevClose)} ${c}` : "—",
+    },
+    {
+      group: "التداول",
+      label: "حجم التداول",
+      value: item.volume > 0 ? item.volume.toLocaleString("en-US") : "—",
+    },
+    {
+      group: "النطاق السنوي",
+      label: "الأعلى 52 أسبوع",
+      value: item.weekHigh52 > 0 ? `${fmt(item.weekHigh52)} ${c}` : "—",
+    },
+    {
+      group: "النطاق السنوي",
+      label: "الأدنى 52 أسبوع",
+      value: item.weekLow52 > 0 ? `${fmt(item.weekLow52)} ${c}` : "—",
+    },
+    { group: "معلومات", label: "رمز التداول", value: item.ticker },
+    { group: "معلومات", label: "السوق", value: item.market },
+    ...(item.longName && item.longName !== item.titleEn
+      ? [{ group: "معلومات", label: "الاسم الرسمي", value: item.longName }]
+      : []),
+  ];
 }
 
 export default async function ETFDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  // ── Single fetch — React.cache deduplicates if called elsewhere ──────────
-  const [etfs] = await Promise.all([getETFs()]);
-
+  const etfs = await getETFs();
   const item = etfs.find((e) => e.slug === slug);
   if (!item) return notFound();
 
-  // ── Candle fetch only after we know item exists ───────────────────────────
   const chartData = item.yahooTicker
     ? await getIntradayCandles(item.yahooTicker, "1d")
     : [];
 
-  const now = new Date().toLocaleTimeString("ar-EG");
   const related = etfs
     .filter((e) => e.category === item.category && e.slug !== slug)
-    .slice(0, 4);
+    .slice(0, 5);
 
+  const stats = buildStats(item);
+  const accentColor = item.positive ? "#22c55e" : "var(--color-destructive)";
   const jsonLd = getJsonLdETFSlug(item);
 
   return (
-    <>
-      <main className="container mx-auto px-4 py-10 space-y-10" dir="rtl">
-        {/* ── BREADCRUMB ── */}
-        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground font-bold">
-          <Link href="/" className="hover:text-primary-brand transition-colors">
-            الرئيسية
-          </Link>
-          <RiArrowLeftSLine size={14} />
-          <Link
-            href="/etfs"
-            className="hover:text-primary-brand transition-colors"
-          >
-            صناديق الاستثمار
-          </Link>
-          <RiArrowLeftSLine size={14} />
-          <span className="text-foreground">{item.title}</span>
-        </nav>
+    <main className="container mx-auto px-4 py-8 md:py-10 space-y-6" dir="rtl">
+      {/* ── BREADCRUMB ── */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground font-bold">
+        <Link
+          href="/etfs"
+          className="hover:text-primary-brand transition-colors"
+        >
+          صناديق الاستثمار
+        </Link>
+        <RiArrowLeftSLine size={14} className="shrink-0" />
+        <span className="text-foreground font-mono" dir="ltr">
+          {item.ticker}
+        </span>
+      </div>
 
-        {/* ── HEADER ── */}
-        <div className="pb-8 border-b border-border flex flex-col md:flex-row md:items-end justify-between gap-6">
+      {/* ── HERO ── */}
+      <div className="relative bg-card border border-border rounded-3xl p-5 md:p-8 overflow-hidden">
+        <div
+          className="absolute -top-16 -left-16 w-64 h-64 rounded-full blur-3xl opacity-5 pointer-events-none"
+          style={{ backgroundColor: accentColor }}
+        />
+        <div className="absolute top-4 left-4 text-border/30 pointer-events-none">
+          <RiFundsLine size={100} />
+        </div>
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          {/* Identity */}
           <div className="flex gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-primary-brand/10 flex items-center justify-center text-primary-brand shrink-0">
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-primary-brand/10 border border-primary-brand/20 flex items-center justify-center text-primary-brand shrink-0">
               <RiFundsLine size={28} />
             </div>
-            <div className="text-right">
-              <h1 className="text-3xl md:text-4xl mt-0 font-black text-foreground tracking-tight mb-1">
-                {item.title}
-              </h1>
-              <p className="text-sm text-muted-foreground font-bold" dir="ltr">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl md:text-3xl m-0 font-black text-foreground tracking-tight leading-none">
+                  {item.title}
+                </h1>
+                <span className="text-[10px] font-black text-muted-foreground bg-muted px-2 py-0.5 rounded-md border border-border font-mono">
+                  {item.market}
+                </span>
+              </div>
+              <p
+                className="text-xs text-muted-foreground text-right font-bold tracking-wide mt-1"
+                dir="ltr"
+              >
                 {item.titleEn} · {item.ticker}
               </p>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-2xl px-5 py-4 shrink-0 space-y-1.5 h-fit w-full md:w-auto">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-              السعر الحالي
-            </p>
-            <div className="flex justify-between items-center gap-3 flex-wrap">
-              <p
-                className="text-2xl md:text-3xl font-black text-foreground tabular-nums"
-                dir="ltr"
-              >
+          {/* Price */}
+          <div className="flex lg:flex-col items-center lg:items-end flex-wrap justify-between gap-2">
+            <div className="flex items-center gap-2" dir="ltr">
+              <span className="text-2xl md:text-4xl font-black text-foreground tabular-nums">
                 {item.point.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                <span className="text-sm text-muted-foreground font-bold mr-1.5">
+                <span className="text-sm text-muted-foreground font-bold mr-1">
                   {item.currency}
                 </span>
-              </p>
+              </span>
               <div
-                className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-black shrink-0 ${
-                  item.positive
-                    ? "bg-green-500/10 text-green-500"
-                    : "bg-destructive/10 text-destructive"
-                }`}
-                dir="ltr"
+                className={`p-1 rounded-xl ${item.positive ? "bg-green-500/10" : "bg-destructive/10"}`}
               >
                 {item.positive ? (
-                  <RiArrowUpSFill size={16} />
+                  <RiArrowUpSFill size={24} className="text-green-500" />
                 ) : (
-                  <RiArrowDownSFill size={16} />
+                  <RiArrowDownSFill size={24} className="text-destructive" />
                 )}
-                {item.positive ? "+" : "-"}
-                {(item.change ?? 0).toFixed(2)}
-                {item.change.toFixed(2)}
-                <span className="opacity-70">
-                  ({(item.changePercent ?? 0).toFixed(2)}%)
-                </span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* ── CHART ── */}
-        <div className="bg-card border border-border rounded-3xl p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
-              <RiBarChartLine size={16} />
-            </div>
-            <h2 className="text-base font-black text-foreground">
-              الأداء خلال اليوم
-            </h2>
-            <div className="flex items-center gap-1.5 mr-auto">
-              <RiRefreshLine size={11} className="text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-bold">
-                آخر تحديث: {now}
+            <div
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-sm font-black w-fit ${
+                item.positive
+                  ? "bg-green-500/10 text-green-500"
+                  : "bg-destructive/10 text-destructive"
+              }`}
+              dir="ltr"
+            >
+              {item.positive ? (
+                <RiArrowUpSFill size={16} />
+              ) : (
+                <RiArrowDownSFill size={16} />
+              )}
+              {item.positive ? "+" : "-"}
+              {(item.change ?? 0).toFixed(2)}
+              <span className="opacity-60 text-xs">
+                ({(item.changePercent ?? 0).toFixed(2)}%)
               </span>
             </div>
           </div>
-          <ETFChart item={item} initialData={chartData} />
         </div>
+      </div>
 
-        {/* ── STATS GRID ── */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="w-1 h-7 bg-primary-brand rounded-full block shrink-0" />
-            <h2 className="text-xl font-black text-foreground">
-              أرقام الصندوق
+      {/* ── CHART ── */}
+      <div className="bg-card border border-border rounded-3xl p-5 md:p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+              <RiLineChartLine size={15} />
+            </div>
+            <h2 className="text-sm md:text-base font-black text-foreground">
+              أداء اليوم
             </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <StatCard
-              label="السعر الحالي"
-              value={`${item.point.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${item.currency}`}
-            />
+          <span
+            className="text-[10px] font-black px-2.5 py-1 rounded-lg border"
+            style={{
+              color: accentColor,
+              borderColor: `${accentColor}30`,
+              backgroundColor: `${accentColor}10`,
+            }}
+          >
+            {chartData.length > 0 ? "بيانات مباشرة" : "السوق مغلق"}
+          </span>
+        </div>
+        <div className="h-48 sm:h-56 md:h-72 w-full">
+          <ETFChart item={item} initialData={chartData} />
+        </div>
+      </div>
 
-            <StatCard
-              label="التغيير اليومي"
-              value={`${item.positive ? "+" : "-"}${(item.change ?? 0).toFixed(2)}`}
-            />
-            <StatCard
-              label="نسبة التغيير"
-              value={`${item.positive ? "+" : "-"}${(item.changePercent ?? 0).toFixed(2)}%`}
-            />
-            <StatCard label="رمز التداول" value={item.ticker} />
+      {/* ── STATS + SIDEBAR ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Stats */}
+        <div className="lg:col-span-2 bg-card border border-border rounded-3xl p-5 md:p-6">
+          <div className="flex items-center gap-2.5 mb-5">
+            <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+              <RiPieChartLine size={15} />
+            </div>
+            <h2 className="text-sm md:text-base font-black text-foreground">
+              بيانات الصندوق
+            </h2>
           </div>
-        </section>
 
-        {/* ── ABOUT + RELATED ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-card border border-border rounded-3xl p-6 space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
-                <RiInformationLine size={16} />
+          {["بيانات السعر", "التداول", "النطاق السنوي", "معلومات"].map(
+            (group) => {
+              const groupStats = stats.filter((s) => s.group === group);
+              if (groupStats.length === 0) return null;
+              return (
+                <div key={group} className="mb-5 last:mb-0">
+                  <p className="text-[10px] font-black text-primary-brand uppercase tracking-widest mb-2 border-b border-border pb-1">
+                    {group}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {groupStats.map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="bg-muted/50 border border-border rounded-2xl p-3 space-y-1 hover:border-primary-brand/30 transition-colors group"
+                      >
+                        <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wide">
+                          <RiStackLine size={10} />
+                          {stat.label}
+                        </span>
+                        <span
+                          className="text-xs md:text-sm font-black text-foreground tabular-nums group-hover:text-primary-brand transition-colors block break-all"
+                          dir="ltr"
+                        >
+                          {stat.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            },
+          )}
+
+          {/* ── 52-week range bar ── */}
+          {item.weekHigh52 > 0 &&
+            item.weekLow52 > 0 &&
+            item.weekHigh52 !== item.weekLow52 && (
+              <div className="mt-4 bg-muted/50 border border-border rounded-2xl p-4 space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  <span>نطاق 52 أسبوع</span>
+                  <span dir="ltr">
+                    {fmt(item.weekLow52)} — {fmt(item.weekHigh52)}{" "}
+                    {item.currency}
+                  </span>
+                </div>
+                <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-primary-brand/30 rounded-full"
+                    style={{
+                      width: `${Math.min(Math.max(((item.point - item.weekLow52) / (item.weekHigh52 - item.weekLow52)) * 100, 0), 100)}%`,
+                    }}
+                  />
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary-brand border-2 border-card shadow"
+                    style={{
+                      left: `calc(${Math.min(Math.max(((item.point - item.weekLow52) / (item.weekHigh52 - item.weekLow52)) * 100, 0), 100)}% - 6px)`,
+                    }}
+                  />
+                </div>
+                <div
+                  className="flex justify-between text-[10px] text-muted-foreground font-bold"
+                  dir="ltr"
+                >
+                  <span>
+                    أدنى {fmt(item.weekLow52)} {item.currency}
+                  </span>
+                  <span className="text-primary-brand font-black">
+                    {fmt(item.point)} {item.currency}
+                  </span>
+                  <span>
+                    أعلى {fmt(item.weekHigh52)} {item.currency}
+                  </span>
+                </div>
               </div>
-              <h2 className="text-base font-black text-foreground">
+            )}
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-4">
+          {/* About */}
+          <div className="bg-card border border-border rounded-3xl p-5">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+                <RiInformationLine size={15} />
+              </div>
+              <h2 className="text-sm font-black text-foreground">
                 نبذة عن الصندوق
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground leading-loose">
-              {item.titleEn} هو صندوق مؤشر متداول يتتبع أداء{" "}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <span className="font-black text-foreground">{item.titleEn}</span>{" "}
+              صندوق مؤشر متداول يتتبع أداء{" "}
               <span className="font-bold text-foreground">{item.title}</span>.
               يتداول تحت الرمز{" "}
               <span className="font-black text-primary-brand" dir="ltr">
@@ -209,34 +340,34 @@ export default async function ETFDetailPage({ params }: Props) {
               </span>{" "}
               على منصة{" "}
               <span className="font-bold text-foreground">{item.market}</span>.
-              البيانات المعروضة للأغراض الإعلامية فقط وليست نصيحة استثمارية.
+              البيانات للأغراض الإعلامية فقط وليست نصيحة استثمارية.
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-3xl p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand shrink-0">
-                <RiFundsLine size={16} />
+          {/* Related */}
+          {related.length > 0 && (
+            <div className="bg-card border border-border rounded-3xl p-5">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand shrink-0">
+                  <RiFundsLine size={15} />
+                </div>
+                <h2 className="text-sm font-black text-foreground">
+                  صناديق مشابهة
+                </h2>
               </div>
-              <h2 className="text-base font-black text-foreground">
-                صناديق مشابهة
-              </h2>
-            </div>
-
-            {related.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {related.map((r) => (
                   <Link
                     key={r.id}
                     href={`/etfs/${r.slug}`}
-                    className="flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-primary-brand/5 border border-transparent hover:border-primary-brand/20 transition-all duration-200 group"
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-primary-brand/5 border border-transparent hover:border-primary-brand/20 transition-all group"
                   >
-                    <div className="text-right min-w-0 flex-1">
-                      <p className="text-sm font-black text-foreground group-hover:text-primary-brand transition-colors truncate">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-black text-foreground group-hover:text-primary-brand transition-colors truncate">
                         {r.title}
                       </p>
                       <p
-                        className="text-[10px] text-muted-foreground font-bold uppercase mt-0.5"
+                        className="text-[10px] text-muted-foreground font-mono"
                         dir="ltr"
                       >
                         {r.ticker}
@@ -250,12 +381,12 @@ export default async function ETFDetailPage({ params }: Props) {
                         {r.point.toLocaleString("en-US", {
                           maximumFractionDigits: 2,
                         })}
-                        <span className="text-[10px] text-muted-foreground font-bold mr-1">
+                        <span className="text-[10px] text-muted-foreground font-bold ml-0.5">
                           {r.currency}
                         </span>
                       </span>
                       <span
-                        className={`text-[10px] font-black px-2 py-0.5 rounded-full inline-flex items-center gap-0.5 ${
+                        className={`inline-flex items-center gap-0.5 text-[10px] font-black px-1.5 py-0.5 rounded-full ${
                           r.positive
                             ? "bg-green-500/10 text-green-500"
                             : "bg-destructive/10 text-destructive"
@@ -273,20 +404,26 @@ export default async function ETFDetailPage({ params }: Props) {
                   </Link>
                 ))}
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground font-medium text-center py-4">
-                لا توجد صناديق مشابهة.
-              </p>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Back */}
+          <Link
+            href="/etfs"
+            className="btn flex items-center justify-center gap-2 text-sm py-2.5 w-full"
+          >
+            <RiArrowLeftSLine size={16} />
+            العودة لصناديق الاستثمار
+          </Link>
         </div>
-      </main>
+      </div>
+
       {/* ── JSON-LD ── */}
       <script
         type="application/ld+json"
         id="etf-detail-schema"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    </>
+    </main>
   );
 }
