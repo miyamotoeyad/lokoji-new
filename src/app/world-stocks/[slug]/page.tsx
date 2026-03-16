@@ -474,8 +474,8 @@ export default async function WorldStockSlugPage({
               href="/world-stocks"
               className="btn flex items-center justify-center gap-2 text-sm py-2.5 w-full"
             >
-              <RiArrowLeftSLine size={16} />
               العودة للأسهم العالمية
+              <RiArrowLeftSLine size={16} />
             </Link>
           </div>
         </div>

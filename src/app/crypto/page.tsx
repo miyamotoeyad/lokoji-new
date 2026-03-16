@@ -122,7 +122,7 @@ export default async function CryptoMarketPage() {
                       <span className="text-xs font-black text-muted-foreground tabular-nums w-5 shrink-0">
                         {index + 1}
                       </span>
-                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary-brand/10 flex items-center justify-center font-black text-primary-brand text-xs shrink-0">
+                      <div className="w-8 md:flex hidden h-8 md:w-9 md:h-9 rounded-xl bg-primary-brand/10 items-center justify-center font-black text-primary-brand text-xs shrink-0">
                         {market.symbol[0]}
                       </div>
                       <div className="min-w-0">

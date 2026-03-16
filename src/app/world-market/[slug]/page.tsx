@@ -176,7 +176,7 @@ export default async function WorldMarketSlugPage({ params }: { params: Params }
             <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
               <RiPieChartLine size={15} />
             </div>
-            <h2 className="text-sm md:text-base font-black text-foreground">بيانات المؤشر</h2>
+            <h2 className="text-sm md:text-base m-0 font-black text-foreground">بيانات المؤشر</h2>
           </div>
 
           {["بيانات السعر", "التداول", "النطاق السنوي", "معلومات"].map((group) => {
@@ -249,7 +249,7 @@ export default async function WorldMarketSlugPage({ params }: { params: Params }
               <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
                 <RiGlobalLine size={15} />
               </div>
-              <h2 className="text-sm font-black text-foreground">مؤشرات أخرى</h2>
+              <h2 className="text-sm font-black m-0 text-foreground">مؤشرات أخرى</h2>
             </div>
             <div className="space-y-1">
               {related.map((r) => (
@@ -284,8 +284,8 @@ export default async function WorldMarketSlugPage({ params }: { params: Params }
           </div>
 
           <Link href="/world-market" className="btn flex items-center justify-center gap-2 text-sm py-2.5 w-full">
-            <RiArrowLeftSLine size={16} />
             العودة للسوق العالمي
+            <RiArrowLeftSLine size={16} />
           </Link>
         </div>
       </div>

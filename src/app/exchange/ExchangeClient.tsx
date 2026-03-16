@@ -17,7 +17,10 @@ import { getCurrencyNameAr } from "@/lib/translateToArabic";
 export default function ExchangeClient({
   initialData,
 }: {
-  initialData: { exchangeData: ExchangeResponse; changes: Record<string, number> };
+  initialData: {
+    exchangeData: ExchangeResponse;
+    changes: Record<string, number>;
+  };
 }) {
   const { rates, stableChanges, loading, error, lastUpdate, convert, refresh } =
     useExchangeRates(initialData);
@@ -114,8 +117,12 @@ export default function ExchangeClient({
               1 {currency1} <span className="text-primary-brand">=</span> {rate}{" "}
               {currency2}
             </p>
-            <p className="text-[10px] text-muted-foreground font-bold" dir="rtl">
-              {getCurrencyNameAr(currency1)} مقابل {getCurrencyNameAr(currency2)}
+            <p
+              className="text-[10px] text-muted-foreground font-bold"
+              dir="rtl"
+            >
+              {getCurrencyNameAr(currency1)} مقابل{" "}
+              {getCurrencyNameAr(currency2)}
             </p>
           </div>
         )}
@@ -184,8 +191,12 @@ export default function ExchangeClient({
                   >
                     1 {currency1} = {rate} {currency2}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-bold" dir="rtl">
-                    {getCurrencyNameAr(currency1)} مقابل {getCurrencyNameAr(currency2)}
+                  <span
+                    className="text-[10px] text-muted-foreground font-bold"
+                    dir="rtl"
+                  >
+                    {getCurrencyNameAr(currency1)} مقابل{" "}
+                    {getCurrencyNameAr(currency2)}
                   </span>
                 </div>
               )}
@@ -208,7 +219,10 @@ export default function ExchangeClient({
               </span>
             </div>
             <div className="flex items-center overflow-hidden gap-3 bg-muted border-2 border-transparent focus-within:border-primary-brand focus-within:bg-card rounded-2xl px-4 py-2.5 w-full md:w-64 transition-all duration-300">
-              <RiSearchLine size={16} className="text-muted-foreground shrink-0" />
+              <RiSearchLine
+                size={16}
+                className="text-muted-foreground shrink-0"
+              />
               <input
                 type="text"
                 placeholder="ابحث عن عملة..."
@@ -221,98 +235,100 @@ export default function ExchangeClient({
 
           <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
             {/* Table Header */}
-            <div className="flex items-center px-6 py-4 border-b border-border bg-muted/50 gap-4">
-              <span className="w-8 text-[11px] font-black text-muted-foreground uppercase tracking-widest shrink-0">
+            <div className="flex items-center px-4 md:px-6 py-4 border-b border-border bg-muted/50 gap-3">
+              <span className="w-6 md:w-8 shrink-0 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
                 #
               </span>
               <span className="flex-1 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
                 العملة
               </span>
-              <span className="w-32 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-center shrink-0 hidden md:block">
+              <span className="w-28 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-left shrink-0 hidden md:block">
                 بالدولار
               </span>
-              <span className="w-36 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-left shrink-0">
+              <span className="w-36 md:w-44 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-left shrink-0">
                 بالجنيه
               </span>
             </div>
 
             {/* Table Rows */}
             <div className="divide-y divide-border">
-              {tableData.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground text-sm font-bold">
-                  لا توجد نتائج لـ &quot;{tableSearch}&quot;
-                </div>
-              ) : (
-                tableData.map((row, i) => {
-                  const isUp = row.change >= 0;
-                  return (
-                    <div
-                      key={row.code}
-                      onClick={() => {
-                        setCurrency2(row.code);
-                        setAmount1(
-                          convert(
-                            parseFloat(String(amount1)) || 1,
-                            currency1,
-                            row.code,
-                          ),
-                        );
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="flex items-center px-6 py-4 hover:bg-primary-brand/5 transition-colors duration-200 gap-4 cursor-pointer group"
-                    >
-                      <span className="w-8 text-xs font-black text-muted-foreground tabular-nums shrink-0">
-                        {i + 1}
-                      </span>
+              {tableData.map((row, i) => {
+                const isUp = row.change >= 0;
+                return (
+                  <div
+                    key={row.code}
+                    onClick={() => {
+                      setCurrency1(row.code);
+                      setCurrency2("EGP");
+                      setAmount1(1);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="flex items-center px-4 md:px-6 py-4 hover:bg-primary-brand/5 transition-colors duration-200 gap-3 cursor-pointer group"
+                  >
+                    {/* # */}
+                    <span className="w-6 md:w-8 text-xs font-black text-muted-foreground tabular-nums shrink-0">
+                      {i + 1}
+                    </span>
 
-                      {/* Currency name + Arabic */}
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="w-9 h-9 rounded-xl bg-primary-brand/10 flex items-center justify-center font-black text-primary-brand text-xs shrink-0">
-                          {row.code[0]}
-                        </div>
-                        <div className="min-w-0">
-                          <span className="font-black text-sm text-foreground group-hover:text-primary-brand transition-colors block">
-                            {row.code}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground font-bold block truncate">
-                            {row.nameAr}
-                          </span>
-                        </div>
+                    {/* Currency name + Arabic */}
+                    <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary-brand/10 flex items-center justify-center font-black text-primary-brand text-xs shrink-0">
+                        {row.code[0]}
                       </div>
-
-                      {/* USD rate */}
-                      <div className="w-32 text-center hidden md:block shrink-0" dir="ltr">
-                        <span className="text-xs font-bold text-muted-foreground tabular-nums">
-                          ${row.rateUSD}
+                      <div className="min-w-0">
+                        <span className="font-black text-xs md:text-sm text-foreground group-hover:text-primary-brand transition-colors block truncate">
+                          {row.nameAr}
                         </span>
-                      </div>
-
-                      {/* EGP rate + change badge */}
-                      <div className="w-36 flex items-center justify-end gap-2 shrink-0">
                         <span
-                          className="text-sm font-black text-foreground tabular-nums"
+                          className="text-[10px] text-right text-muted-foreground font-bold font-mono block"
                           dir="ltr"
                         >
-                          {row.rate} ج.م
+                          {row.code}
                         </span>
-                        <div
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
-                            isUp
-                              ? "bg-green-500/10 text-green-500"
-                              : "bg-destructive/10 text-destructive"
-                          }`}
-                        >
-                          {isUp ? (
-                            <RiArrowUpSFill size={12} />
-                          ) : (
-                            <RiArrowDownSFill size={12} />
-                          )}
-                        </div>
                       </div>
                     </div>
-                  );
-                })
-              )}
+
+                    {/* USD rate — desktop only, matches header w-28 */}
+                    <div
+                      className="w-28 text-left hidden md:block shrink-0"
+                      dir="ltr"
+                    >
+                      <span className="text-xs font-bold text-muted-foreground tabular-nums">
+                        ${row.rateUSD}
+                      </span>
+                    </div>
+
+                    {/* EGP rate + change — matches header w-36 md:w-44 */}
+                    <div
+                      className="w-36 md:w-44 flex items-center justify-between shrink-0"
+                      dir="ltr"
+                    >
+                      <span className="text-xs md:text-sm font-black text-foreground tabular-nums">
+                        {row.rate}
+                        <span className="text-[10px] text-muted-foreground font-bold ml-0.5">
+                          ج.م
+                        </span>
+                      </span>
+                      <div
+                        className={`inline-flex items-center gap-0.5 px-1.5 md:px-2 py-0.5 rounded-full text-[10px] font-black shrink-0 ${
+                          isUp
+                            ? "bg-green-500/10 text-green-500"
+                            : "bg-destructive/10 text-destructive"
+                        }`}
+                      >
+                        {isUp ? (
+                          <RiArrowUpSFill size={12} />
+                        ) : (
+                          <RiArrowDownSFill size={12} />
+                        )}
+                        <span className="hidden sm:inline">
+                          {Math.abs(row.change).toFixed(2)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

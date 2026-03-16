@@ -265,30 +265,12 @@ export default async function CryptoPage({ params }: PageProps) {
               </p>
             </div>
 
-            <div className="dark:bg-card bg-dprimary rounded-3xl p-5 text-white relative overflow-hidden">
-              <div className="absolute -top-8 -left-8 w-28 h-28 bg-primary-brand/20 rounded-full blur-3xl pointer-events-none" />
-              <RiLineChartLine
-                className="absolute -bottom-4 -right-4 text-white/5 pointer-events-none"
-                size={80}
-              />
-              <div className="relative z-10 space-y-3">
-                <div className="w-6 h-0.5 bg-primary-brand rounded-full" />
-                <h3 className="text-sm font-black">تنبيهات السعر</h3>
-                <p className="text-[11px] dark:text-white/50 leading-relaxed">
-                  إشعارات فورية عند تغير سعر {crypto.name}.
-                </p>
-                <button className="cursor-pointer w-full py-2.5 bg-primary-brand hover:bg-primary-brand/90 rounded-xl font-black text-xs transition-all duration-200 active:scale-95">
-                  ابدأ المتابعة
-                </button>
-              </div>
-            </div>
-
             <Link
               href="/crypto"
               className="btn flex items-center justify-center gap-2 text-sm py-2.5 w-full"
             >
-              <RiArrowLeftSLine size={16} />
               العودة للعملات الرقمية
+              <RiArrowLeftSLine size={16} />
             </Link>
           </div>
         </div>

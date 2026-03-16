@@ -2,16 +2,16 @@ import {
   RiArrowUpSFill,
   RiArrowDownSFill,
   RiBarChartGroupedLine,
-  RiExternalLinkLine,
-  RiRefreshLine,
   RiFlashlightLine,
+  RiRefreshLine,
+  RiFlashlightFill,
 } from "@remixicon/react";
 import Link from "next/link";
 import { getEgyptianMarketData, type EGStock } from "@/lib/Data/egMarketData";
-import EGMarketTable from "@/components/Market/EGMarketTable";
 import { generateStaticMetadata } from "@/lib/MetaData/generateStaticMetadata";
 import { getJsonLdEGXListing } from "@/lib/Schemas/getJsonLd";
 import { Metadata } from "next";
+import EGMarketTable from "@/components/Market/EGMarketTable";
 
 export const metadata: Metadata = generateStaticMetadata({
   title: "البورصة المصرية | متابعة حية للأسهم",
@@ -20,14 +20,16 @@ export const metadata: Metadata = generateStaticMetadata({
   url: "/eg-market",
 });
 
-// ← no revalidate — unstable_cache in getEgyptianMarketData handles it
-
 export default async function MarketPage() {
   const stocks = await getEgyptianMarketData();
   const now = new Date().toLocaleTimeString("ar-EG");
   const top5 = stocks.slice(0, 5);
 
-  // Map to EGStockData shape for JSON-LD
+  const sectors = [
+    "الكل",
+    ...Array.from(new Set(stocks.map((s) => s.sector).filter(Boolean))),
+  ];
+
   const stocksForSchema = stocks.map((s) => ({
     code: s.code,
     titleAr: s.titleAr,
@@ -43,53 +45,41 @@ export default async function MarketPage() {
     <>
       <main className="container mx-auto px-4 py-10 space-y-12" dir="rtl">
         {/* ── PAGE HEADER ── */}
-        <div className="pb-8 border-b border-border flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
-                <RiBarChartGroupedLine size={20} />
-              </div>
-              <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">
-                EGX
-              </span>
+        <div className="pb-8 border-b border-border">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-2xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+              <RiBarChartGroupedLine size={20} />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-foreground mb-2 tracking-tight">
-              البورصة المصرية
-            </h1>
-            <p className="text-muted-foreground font-medium text-lg">
-              تابع معانا أسعار أسهم الشركات المصرية لحظة بلحظة.
-            </p>
+            <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+              EGX
+            </span>
           </div>
-
-          <div className="bg-card border border-border rounded-2xl px-5 py-4 shrink-0 h-fit space-y-1">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-              آخر تحديث
-            </p>
-            <div className="flex items-center gap-2">
-              <RiRefreshLine size={13} className="text-primary-brand" />
-              <span className="text-sm font-black text-foreground">{now}</span>
-            </div>
-            <p className="text-[10px] text-muted-foreground font-bold">
-              {stocks.length} شركة مدرجة
-            </p>
-          </div>
+          <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-2">
+            البورصة المصرية
+          </h1>
+          <p className="text-muted-foreground text-base md:text-lg font-medium">
+            تابع معانا أسعار أسهم الشركات المصرية لحظة بلحظة.
+          </p>
         </div>
 
-        {/* ── TOP 5 BENTO CARDS ── */}
+        {/* ── TOP 5 FEATURED ── */}
         <section>
           <div className="flex items-center gap-3 mb-6">
             <span className="w-1 h-7 bg-primary-brand rounded-full block shrink-0" />
+            <div className="w-8 h-8 rounded-xl bg-primary-brand/10 flex items-center justify-center text-primary-brand">
+              <RiFlashlightLine size={16} />
+            </div>
             <h2 className="text-xl font-black text-foreground">
               الأكثر نشاطاً
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {top5.map((stock: EGStock) => (
               <Link
                 key={stock.id}
                 href={`/eg-market/${stock.slug}`}
-                className="group bg-card border border-border p-5 rounded-3xl hover:border-primary-brand/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col gap-3 h-full"
+                className="group bg-card border border-border p-4 rounded-3xl hover:border-primary-brand/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col gap-3"
               >
                 <div className="flex items-center justify-between">
                   <span
@@ -99,7 +89,7 @@ export default async function MarketPage() {
                     {stock.code}
                   </span>
                   <div
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black ${
+                    className={`inline-flex items-center gap-0.5 px-2 py-1 rounded-full text-[10px] font-black ${
                       stock.positive
                         ? "bg-green-500/10 text-green-500"
                         : "bg-destructive/10 text-destructive"
@@ -107,62 +97,44 @@ export default async function MarketPage() {
                     dir="ltr"
                   >
                     {stock.positive ? (
-                      <RiArrowUpSFill size={14} />
+                      <RiArrowUpSFill size={11} />
                     ) : (
-                      <RiArrowDownSFill size={14} />
+                      <RiArrowDownSFill size={11} />
                     )}
-                    {stock.positive ? "+" : "-"}
-                    {stock.changePercent.toFixed(2)}%
+                    {Math.abs(stock.changePercent).toFixed(2)}%
                   </div>
                 </div>
 
-                <h3 className="font-black text-sm text-muted-foreground group-hover:text-primary-brand transition-colors line-clamp-2 leading-snug flex-1">
+                <p className="font-bold text-xs text-muted-foreground group-hover:text-primary-brand transition-colors line-clamp-2 leading-snug flex-1">
                   {stock.titleAr}
-                </h3>
+                </p>
 
-                <div className="flex justify-between items-end">
-                  <p
-                    className="lg:text-xl text-3xl font-black text-foreground tabular-nums"
-                    dir="ltr"
-                  >
-                    {stock.price.toLocaleString("en-US", {
-                      maximumFractionDigits: 2,
-                    })}
-                    <span className="text-[10px] text-muted-foreground font-bold mr-1">
-                      EGP
-                    </span>
-                  </p>
-                  <RiExternalLinkLine
-                    size={13}
-                    className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </div>
+                <p
+                  className="text-lg md:text-xl font-black text-foreground tabular-nums"
+                  dir="ltr"
+                >
+                  {stock.price.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                  <span className="text-[10px] text-muted-foreground font-bold mr-1">
+                    EGP
+                  </span>
+                </p>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* ── FULL COMPANY LIST ── */}
+        {/* ── FULL TABLE ── */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <span className="w-1 h-7 bg-primary-brand rounded-full block shrink-0" />
-              <h2 className="text-xl font-black text-foreground">
-                قائمة الشركات
-              </h2>
-            </div>
-            <span className="text-xs font-black text-muted-foreground bg-muted px-3 py-1.5 rounded-full border border-border">
-              {stocks.length} شركة
-            </span>
-          </div>
-          <EGMarketTable stocks={stocks} />
+          <EGMarketTable stocks={stocks} sectors={sectors} />
         </section>
 
         {/* ── DISCLAIMER ── */}
         <div className="bg-card border border-border rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-2xl bg-primary-brand/10 flex items-center justify-center text-primary-brand shrink-0 mt-0.5">
-              <RiFlashlightLine size={18} />
+              <RiFlashlightFill size={18} />
             </div>
             <div>
               <p className="text-sm font-black text-foreground mb-1">
@@ -184,6 +156,7 @@ export default async function MarketPage() {
           </div>
         </div>
       </main>
+
       {/* ── JSON-LD ── */}
       <script
         type="application/ld+json"

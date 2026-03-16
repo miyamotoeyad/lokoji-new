@@ -15,15 +15,15 @@ export default function WorldMarketCard({ item }: { item: WorldMarketItem }) {
         />
 
         {/* Top row: ticker chip + change pill */}
-        <div className="flex items-center justify-between relative z-10">
+        <div className="flex items-center flex-wrap gap-2.5 justify-between relative z-10">
           <span
-            className="text-[10px] font-black tracking-widest text-muted-foreground bg-muted px-2.5 py-1 rounded-lg border border-border font-mono"
+            className="text-[10px] w-fit font-black tracking-widest text-muted-foreground bg-muted px-2.5 py-1 rounded-lg border border-border font-mono"
             dir="ltr"
           >
             {item.slug.toUpperCase()}
           </span>
           <div
-            className={`inline-flex items-center gap-0.5 px-2 py-1 rounded-lg text-[10px] font-black ${
+            className={`inline-flex w-fit items-center gap-0.5 px-2 py-1 rounded-lg text-[10px] font-black ${
               item.positive
                 ? "bg-green-500/10 text-green-500"
                 : "bg-destructive/10 text-destructive"

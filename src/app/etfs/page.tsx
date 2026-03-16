@@ -32,8 +32,6 @@ export default async function ETFPage() {
     <>
       <main className="container mx-auto px-4 py-10 space-y-12" dir="rtl">
         {" "}
-        {/* ← removed fragment */}
-        {/* ── HEADER ── */}
         <div className="pb-8 border-b border-border flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-4">

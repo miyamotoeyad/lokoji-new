@@ -11,6 +11,7 @@ export interface EGStock {
   slug: string;
   price: number;
   change: number;
+  sector: string;
   changePercent: number;
   positive: boolean;
   currency: string;
@@ -208,6 +209,7 @@ export const getEgyptianMarketData = cache(async (): Promise<EGStock[]> => {
       slug: stock.code.toLowerCase(),
       price: q.price,
       change: Math.abs(q.change),
+      sector: stock.sector ?? "عام",
       changePercent: Math.abs(q.changePercent),
       positive: q.changePercent >= 0,
       currency: "EGP",
